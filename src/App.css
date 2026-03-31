@@ -1,0 +1,8 @@
+.app-shell {
+	opacity: 0;
+	transition: opacity 0.55s ease;
+}
+
+.app-shell.ready {
+	opacity: 1;
+}
