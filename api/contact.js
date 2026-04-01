@@ -13,6 +13,17 @@ const json = (res, statusCode, payload) => {
 
 const sanitize = (value = "") => value.toString().trim();
 
+const IMAGE_PATH_REGEX = /images\/([a-zA-Z0-9._-]+)/g;
+
+const MIME_BY_EXTENSION = {
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".gif": "image/gif",
+  ".webp": "image/webp",
+  ".svg": "image/svg+xml",
+};
+
 const sendWithResend = async (apiKey, payload) => {
   return fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -44,50 +55,64 @@ const getThankYouText = async (name) => {
   }
 };
 
-const textToBasicHtml = (text) => {
+const textToFallbackHtml = (text) => {
   const escaped = text
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
 
-  return `<!doctype html>
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="color-scheme" content="light" />
-    <meta name="supported-color-schemes" content="light" />
-    <meta name="x-apple-disable-message-reformatting" />
-    <style>
-      :root {
-        color-scheme: light only;
-        supported-color-schemes: light;
-      }
-      body,
-      table,
-      td,
-      p {
-        background: #fff6ec !important;
-        color: #111111 !important;
-      }
-      a {
-        color: #2341e1 !important;
-      }
-    </style>
-  </head>
-  <body style="margin:0;padding:0;background:#fff6ec !important;color:#111111 !important;">
-    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" bgcolor="#fff6ec" style="background:#fff6ec !important;">
-      <tr>
-        <td align="center" style="padding:24px;">
-          <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:640px;background:#fff6ec !important;border:1px solid #e8ded2;border-radius:12px;">
-            <tr>
-              <td style="padding:24px;font-family:Arial,Helvetica,sans-serif;line-height:1.6;white-space:pre-wrap;color:#111111 !important;">${escaped}</td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-  </body>
-</html>`;
+  return `<div style="font-family:Arial,Helvetica,sans-serif;line-height:1.6;white-space:pre-wrap;color:#1c1c1c">${escaped}</div>`;
+};
+
+const enforceLightThemeHint = (html) => {
+  if (html.includes("name=\"color-scheme\"")) {
+    return html;
+  }
+
+  const lightHints =
+    '<meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light">';
+
+  if (html.includes("</head>")) {
+    return html.replace("</head>", `${lightHints}</head>`);
+  }
+
+  return html;
+};
+
+const inlineLocalTemplateImages = async (html) => {
+  const matches = html.match(IMAGE_PATH_REGEX) || [];
+  const uniquePaths = [...new Set(matches)];
+  let inlinedHtml = html;
+
+  for (const relativePath of uniquePaths) {
+    const fileName = relativePath.replace("images/", "");
+    const imagePath = path.resolve(__dirname, "../email/images", fileName);
+    const extension = path.extname(fileName).toLowerCase();
+    const mimeType = MIME_BY_EXTENSION[extension] || "application/octet-stream";
+
+    try {
+      const imageBuffer = await readFile(imagePath);
+      const dataUrl = `data:${mimeType};base64,${imageBuffer.toString("base64")}`;
+      inlinedHtml = inlinedHtml.split(relativePath).join(dataUrl);
+    } catch {
+      // Keep original URL if a template image is missing.
+    }
+  }
+
+  return inlinedHtml;
+};
+
+const getThankYouHtml = async (name) => {
+  const fallbackText = await getThankYouText(name);
+
+  try {
+    const templatePath = path.resolve(__dirname, "../email/email.html");
+    const template = await readFile(templatePath, "utf8");
+    const inlinedTemplate = await inlineLocalTemplateImages(template);
+    return enforceLightThemeHint(inlinedTemplate);
+  } catch {
+    return textToFallbackHtml(fallbackText);
+  }
 };
 
 export default async function handler(req, res) {
@@ -128,13 +153,14 @@ export default async function handler(req, res) {
 
   try {
     const thankYouText = await getThankYouText(cleanName);
+    const thankYouHtml = await getThankYouHtml(cleanName);
 
     const userEmailPayload = {
       from: CONTACT_FROM_EMAIL,
       to: [cleanEmail],
       subject: "Thanks for contacting me",
       text: thankYouText,
-      html: textToBasicHtml(thankYouText),
+      html: thankYouHtml,
     };
 
     const requests = [sendWithResend(RESEND_API_KEY, userEmailPayload)];
