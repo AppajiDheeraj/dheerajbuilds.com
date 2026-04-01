@@ -9,6 +9,7 @@ import Matter from "matter-js";
 
 import ReactLenis from "lenis/react";
 import Transition from "../../components/Transition/Transition";
+import AboutResizeHero from "../../components/AboutResizeHero/AboutResizeHero";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -385,6 +386,8 @@ const About = () => {
   return (
     <ReactLenis root>
       <div className="page about">
+        <AboutResizeHero />
+
         <section className="about-hero">
           <div className="about-hero-img">
             <img src="/about/about-hero.jpg" alt="About hero" />

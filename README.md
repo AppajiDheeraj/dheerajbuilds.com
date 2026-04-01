@@ -1,12 +1,30 @@
-# React + Vite
+# Portfolio (Vite + React)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Contact Form Backend
 
-Currently, two official plugins are available:
+This project now includes a serverless backend endpoint at `/api/contact`.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### What it does
 
-## Expanding the ESLint configuration
+- Accepts `POST` requests from the contact form.
+- Validates required fields (`name`, `email`, `message`).
+- Uses a hidden honeypot field to reduce bot submissions.
+- Sends emails through Resend.
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Required environment variables
+
+Set these in Vercel project settings (or local `.env` when using `vercel dev`):
+
+- `RESEND_API_KEY`: API key from Resend.
+- `CONTACT_TO_EMAIL`: inbox where contact messages are delivered.
+- `CONTACT_FROM_EMAIL`: verified sender identity in Resend (for example `Portfolio <hello@yourdomain.com>`).
+
+### Deployment notes
+
+- The Vercel config uses filesystem-first routing so `/api/*` functions are served correctly.
+- All non-file routes are then redirected to `/` for the React SPA.
+
+### Local development
+
+- Frontend only: `npm run dev`
+- Frontend + API functions: use Vercel local runtime (`vercel dev`)

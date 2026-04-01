@@ -1,9 +1,60 @@
-import React from "react";
+import React, { useState } from "react";
 import "./ContactForm.css";
 import { siteConfig } from "../../data";
 
 const ContactForm = () => {
   const { form } = siteConfig.contact;
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+    company: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState("");
+  const [isError, setIsError] = useState(false);
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    setIsSubmitting(true);
+    setSubmitMessage("");
+    setIsError(false);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Unable to send message right now.");
+      }
+
+      setSubmitMessage("Thanks! Your message has been sent.");
+      setFormData({
+        name: "",
+        email: "",
+        message: "",
+        company: "",
+      });
+    } catch (error) {
+      setIsError(true);
+      setSubmitMessage(error.message || "Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="contact-form">
@@ -36,21 +87,62 @@ const ContactForm = () => {
         </div>
 
         <div className="contact-form-col">
-          <div className="form-item">
-            <input type="text" placeholder={form.placeholders.name} />
-          </div>
+          <form onSubmit={handleSubmit}>
+            <input
+              type="text"
+              name="company"
+              value={formData.company}
+              onChange={handleChange}
+              tabIndex={-1}
+              autoComplete="off"
+              style={{ display: "none" }}
+            />
 
-          <div className="form-item">
-            <input type="text" placeholder={form.placeholders.email} />
-          </div>
+            <div className="form-item">
+              <input
+                type="text"
+                name="name"
+                placeholder={form.placeholders.name}
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-          <div className="form-item">
-            <textarea type="text" rows={6} placeholder={form.placeholders.message} />
-          </div>
+            <div className="form-item">
+              <input
+                type="email"
+                name="email"
+                placeholder={form.placeholders.email}
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-          <div className="form-item">
-            <button className="btn">{form.submitLabel}</button>
-          </div>
+            <div className="form-item">
+              <textarea
+                name="message"
+                rows={6}
+                placeholder={form.placeholders.message}
+                value={formData.message}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="form-item">
+              <button className="btn" type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Sending..." : form.submitLabel}
+              </button>
+            </div>
+
+            {submitMessage ? (
+              <p className="primary sm" style={{ color: isError ? "#cf2f2f" : "inherit" }}>
+                {submitMessage}
+              </p>
+            ) : null}
+          </form>
         </div>
       </div>
     </div>
