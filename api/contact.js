@@ -26,7 +26,7 @@ const sendWithResend = async (apiKey, payload) => {
   });
 };
 
-const getFormResponseText = async ({ name, email, message }) => {
+const getEmailTemplateText = async ({ name, email, message }) => {
   const fallback = [
     "New portfolio form response",
     "",
@@ -38,10 +38,7 @@ const getFormResponseText = async ({ name, email, message }) => {
   ].join("\n");
 
   try {
-    const templatePath = path.resolve(
-      __dirname,
-      "../templates/form_response/email.txt"
-    );
+    const templatePath = path.resolve(__dirname, "../templates/email/email.txt");
     const template = await readFile(templatePath, "utf8");
 
     return [
@@ -92,7 +89,7 @@ const enforceLightThemeHint = (html) => {
 };
 
 const normalizeFormResponseAssetBaseUrl = (value) => {
-  const fallback = "https://portfolio-seven-ruby-98.vercel.app/form_response/images";
+  const fallback = "https://portfolio-seven-ruby-98.vercel.app/email/images";
   const url = sanitize(value || fallback);
   return url.replace(/\/+$/, "");
 };
@@ -101,12 +98,9 @@ const replaceTemplateImagePaths = (html, baseUrl) => {
   return html.replace(IMAGE_PATH_REGEX, (_, fileName) => `${baseUrl}/${fileName}`);
 };
 
-const getFormResponseHtml = async ({ name, email, message, assetBaseUrl, fallbackText }) => {
+const getEmailTemplateHtml = async ({ name, email, message, assetBaseUrl, fallbackText }) => {
   try {
-    const templatePath = path.resolve(
-      __dirname,
-      "../templates/form_response/email.html"
-    );
+    const templatePath = path.resolve(__dirname, "../templates/email/email.html");
     const template = await readFile(templatePath, "utf8");
     const withAbsoluteAssets = replaceTemplateImagePaths(template, assetBaseUrl);
 
@@ -184,7 +178,7 @@ export default async function handler(req, res) {
   try {
     const ownerRecipientEmail = sanitize(CONTACT_TO_EMAIL) || CONTACT_FROM_EMAIL;
 
-    const ownerText = await getFormResponseText({
+    const ownerText = await getEmailTemplateText({
       name: cleanName,
       email: cleanEmail,
       message: cleanMessage,
@@ -192,7 +186,7 @@ export default async function handler(req, res) {
     const ownerAssetBaseUrl = normalizeFormResponseAssetBaseUrl(
       EMAIL_FORM_RESPONSE_ASSET_BASE_URL
     );
-    const ownerHtml = await getFormResponseHtml({
+    const ownerHtml = await getEmailTemplateHtml({
       name: cleanName,
       email: cleanEmail,
       message: cleanMessage,
@@ -204,7 +198,7 @@ export default async function handler(req, res) {
       from: CONTACT_FROM_EMAIL,
       to: [ownerRecipientEmail],
       reply_to: cleanEmail,
-      subject: `New portfolio contact from ${cleanName}`,
+      subject: "Appaji Dheeraj Portfolio Email",
       text: ownerText,
       html: ownerHtml,
     };
