@@ -18,7 +18,6 @@ export const Shader = forwardRef(function Shader(props, ref) {
   const {
     source,
     uniforms = {},
-    textures = [],
     maxFps = 60,
     initialState = "playing",
   } = props;

@@ -1,4 +1,4 @@
-import "./FieldworkRoutine.css";
+import "./ProjectCarousel.css";
 import { useRef } from "react";
 import { Github } from "lucide-react";
 
@@ -10,7 +10,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const FieldworkRoutine = () => {
+const ProjectCarousel = () => {
   const sectionRef = useRef(null);
   const stageRef = useRef(null);
   const trackRef = useRef(null);
@@ -108,4 +108,4 @@ const FieldworkRoutine = () => {
   );
 };
 
-export default FieldworkRoutine;
+export default ProjectCarousel;

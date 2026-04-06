@@ -46,10 +46,10 @@ const NavBar = () => {
   // Auto-close menu on route change
   useEffect(() => {
     if (location.pathname !== previousPathRef.current && isOpen) {
-      closeMenu();
+      closeMenu(true);
     }
     previousPathRef.current = location.pathname;
-  }, [location.pathname]);
+  }, [location.pathname, isOpen]);
 
   // Close menu when clicking outside the header and overlay areas.
   useEffect(() => {
@@ -60,7 +60,7 @@ const NavBar = () => {
       const clickedInsideHeader = menuHeaderRef.current?.contains(event.target);
 
       if (!clickedInsideOverlay && !clickedInsideHeader) {
-        closeMenu();
+        closeMenu(true);
       }
     };
 
@@ -75,30 +75,42 @@ const NavBar = () => {
     
     // Initial Setup Effect
   useEffect(() => {
+    if (!menuOverlayRef.current || !menuFooterRef.current || !menuRef.current) {
+      return;
+    }
+
     gsap.set(menuOverlayRef.current, {
       scaleY: 0,
       transformOrigin: "top center",
     });
     gsap.set(menuFooterRef.current, { opacity: 0, y: 20 });
 
-    menuItemsRef.current.forEach((item) => {
+    const menuItems = menuItemsRef.current.filter(Boolean);
+
+    menuItems.forEach((item) => {
       const link = item.querySelector("a");
-      if (link) {
+      if (link && link.textContent?.trim()) {
         const split = new SplitText(link, { type: "words", wordsClass: "word" });
         splitTexts.current.push(split);
         gsap.set(split.words, { yPercent: 120 });
       }
     });
-    gsap.set(menuItemsRef.current, { opacity: 1 });
+    if (menuItems.length) {
+      gsap.set(menuItems, { opacity: 1 });
+    }
 
     const footerElements = menuFooterRef.current.querySelectorAll(
       ".menu-social a, .menu-social span, .menu-time"
     );
     footerElements.forEach((element) => {
+      if (!element.textContent?.trim()) return;
       const split = new SplitText(element, { type: "chars" });
       footerSplitTexts.current.push(split);
       gsap.set(split.chars, { opacity: 0 });
     });
+
+    const splitTextInstances = splitTexts.current;
+    const footerSplitTextInstances = footerSplitTexts.current;
 
     let lastScrollY = window.scrollY;
     const handleScroll = () => {
@@ -131,8 +143,8 @@ const NavBar = () => {
     return () => {
       window.removeEventListener("scroll", handleScroll);
       clearInterval(timeInterval);
-      splitTexts.current.forEach((s) => s.revert());
-      footerSplitTexts.current.forEach((s) => s.revert());
+      splitTextInstances.forEach((s) => s.revert());
+      footerSplitTextInstances.forEach((s) => s.revert());
     };
   }, []);
 
@@ -149,7 +161,7 @@ const NavBar = () => {
     });
 
     tl.to(menuOverlayRef.current, {
-      duration: 0.5,
+      duration: 0.3,
       scaleY: 1,
       ease: "power3.out",
     });
@@ -157,14 +169,14 @@ const NavBar = () => {
     const allWords = splitTexts.current.flatMap((s) => s.words);
     tl.to(
       allWords,
-      { duration: 0.75, yPercent: 0, stagger: 0.05, ease: "power4.out" },
-      "-=0.3"
+      { duration: 0.45, yPercent: 0, stagger: 0.035, ease: "power4.out" },
+      "-=0.2"
     );
 
     tl.to(
       menuFooterRef.current,
       {
-        duration: 0.4,
+        duration: 0.25,
         y: 0,
         opacity: 1,
         ease: "power2.out",
@@ -175,13 +187,31 @@ const NavBar = () => {
           });
         },
       },
-      "-=0.75"
+      "-=0.4"
     );
   };
 
     // Close Menu Animation
-  const closeMenu = () => {
+  const closeMenu = (immediate = false) => {
     if (isAnimating.current) return;
+
+    if (immediate) {
+      isAnimating.current = false;
+      setIsOpen(false);
+      gsap.killTweensOf(menuOverlayRef.current);
+      gsap.killTweensOf(menuFooterRef.current);
+      const allWords = splitTexts.current.flatMap((s) => s.words);
+      if (allWords.length) {
+        gsap.killTweensOf(allWords);
+      }
+      gsap.set(menuOverlayRef.current, { scaleY: 0 });
+      gsap.set(menuFooterRef.current, { y: 20, opacity: 0 });
+      if (allWords.length) {
+        gsap.set(allWords, { yPercent: 120 });
+      }
+      return;
+    }
+
     isAnimating.current = true;
     setIsOpen(false);
 
@@ -192,7 +222,7 @@ const NavBar = () => {
     });
 
     tl.to(menuFooterRef.current, {
-      duration: 0.3,
+      duration: 0.2,
       y: 20,
       opacity: 0,
       ease: "power2.in",
@@ -201,14 +231,14 @@ const NavBar = () => {
     const allWords = splitTexts.current.flatMap((s) => s.words);
     tl.to(
       allWords,
-      { duration: 0.25, yPercent: 120, stagger: -0.025, ease: "power2.in" },
-      "-=0.25"
+      { duration: 0.2, yPercent: 120, stagger: -0.02, ease: "power2.in" },
+      "-=0.15"
     );
 
     tl.to(
       menuOverlayRef.current,
-      { duration: 0.5, scaleY: 0, ease: "power3.inOut" },
-      "-=0.2"
+      { duration: 0.25, scaleY: 0, ease: "power3.inOut" },
+      "-=0.1"
     );
   };
 
@@ -221,7 +251,7 @@ const NavBar = () => {
   };
 
   const handleMenuLinkClick = () => {
-    closeMenu();
+    closeMenu(true);
   };
 
   return (

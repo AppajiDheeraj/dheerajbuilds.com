@@ -1,5 +1,5 @@
 import reviews from "../../data/reviews";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useCallback, useState, useEffect, useRef } from "react";
 import "./Reviews.css";
 
 import SplitType from "split-type";
@@ -23,7 +23,13 @@ const Reviews = () => {
     if (animationInProgressRef.current) return;
     animationInProgressRef.current = true;
 
-    const currentReviewItems = document.querySelectorAll(".review-item");
+    const container = reviewsContainerRef.current;
+    if (!container) {
+      animationInProgressRef.current = false;
+      return;
+    }
+
+    const currentReviewItems = container.querySelectorAll(".review-item");
     if (currentReviewItems.length > 0) {
       if (!hasInitialClickRef.current) {
         hasInitialClickRef.current = true;
@@ -74,8 +80,8 @@ const Reviews = () => {
       <h4 id="review-author">- ${reviews[activeReview].author}</h4>
     `;
 
-    if (reviewsContainerRef.current) {
-      reviewsContainerRef.current.appendChild(newReviewItem);
+    if (container) {
+      container.appendChild(newReviewItem);
 
       const newReviewCopy = newReviewItem.querySelector("#review-copy");
       const newReviewAuthor = newReviewItem.querySelector("#review-author");
@@ -113,7 +119,7 @@ const Reviews = () => {
         ease: "power4.out",
         delay: 0.7,
         onComplete: () => {
-          const reviewItems = document.querySelectorAll(".review-item");
+          const reviewItems = container.querySelectorAll(".review-item");
           if (reviewItems.length > 1) {
             for (let i = 0; i < reviewItems.length - 1; i++) {
               reviewItems[i].remove();
@@ -125,11 +131,11 @@ const Reviews = () => {
     }
   }, [activeReview]);
 
-  const handleReviewClick = (index) => {
+  const handleReviewClick = useCallback((index) => {
     if (index !== activeReview && !animationInProgressRef.current) {
       setActiveReview(index);
     }
-  };
+  }, [activeReview]);
 
   return (
     <section className="reviews" ref={reviewsContainerRef}>

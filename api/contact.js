@@ -26,26 +26,6 @@ const sendWithResend = async (apiKey, payload) => {
   });
 };
 
-const getThankYouText = async (name) => {
-  const fallback = [
-    `Hi ${name},`,
-    "",
-    "Thank you for reaching out through my portfolio.",
-    "I received your message and will get back to you soon.",
-    "",
-    "Best regards,",
-    "Appaji Dheeraj",
-  ].join("\n");
-
-  try {
-    const templatePath = path.resolve(__dirname, "../email/email.txt");
-    const template = await readFile(templatePath, "utf8");
-    return `Hi ${name},\n\n${template.trim()}`;
-  } catch {
-    return fallback;
-  }
-};
-
 const getFormResponseText = async ({ name, email, message }) => {
   const fallback = [
     "New portfolio form response",
@@ -58,7 +38,10 @@ const getFormResponseText = async ({ name, email, message }) => {
   ].join("\n");
 
   try {
-    const templatePath = path.resolve(__dirname, "../form_response/email.txt");
+    const templatePath = path.resolve(
+      __dirname,
+      "../templates/form_response/email.txt"
+    );
     const template = await readFile(templatePath, "utf8");
 
     return [
@@ -108,12 +91,6 @@ const enforceLightThemeHint = (html) => {
   return `${lightHints}${html}`;
 };
 
-const normalizeAssetBaseUrl = (value) => {
-  const fallback = "https://portfolio-seven-ruby-98.vercel.app/email/images";
-  const url = sanitize(value || fallback);
-  return url.replace(/\/+$/, "");
-};
-
 const normalizeFormResponseAssetBaseUrl = (value) => {
   const fallback = "https://portfolio-seven-ruby-98.vercel.app/form_response/images";
   const url = sanitize(value || fallback);
@@ -124,22 +101,12 @@ const replaceTemplateImagePaths = (html, baseUrl) => {
   return html.replace(IMAGE_PATH_REGEX, (_, fileName) => `${baseUrl}/${fileName}`);
 };
 
-const getThankYouHtml = async (name, assetBaseUrl) => {
-  const fallbackText = await getThankYouText(name);
-
-  try {
-    const templatePath = path.resolve(__dirname, "../email/email.html");
-    const template = await readFile(templatePath, "utf8");
-    const withAbsoluteAssets = replaceTemplateImagePaths(template, assetBaseUrl);
-    return enforceLightThemeHint(withAbsoluteAssets);
-  } catch {
-    return textToFallbackHtml(fallbackText);
-  }
-};
-
 const getFormResponseHtml = async ({ name, email, message, assetBaseUrl, fallbackText }) => {
   try {
-    const templatePath = path.resolve(__dirname, "../form_response/email.html");
+    const templatePath = path.resolve(
+      __dirname,
+      "../templates/form_response/email.html"
+    );
     const template = await readFile(templatePath, "utf8");
     const withAbsoluteAssets = replaceTemplateImagePaths(template, assetBaseUrl);
 
@@ -195,63 +162,68 @@ export default async function handler(req, res) {
     RESEND_API_KEY,
     CONTACT_TO_EMAIL,
     CONTACT_FROM_EMAIL,
-    EMAIL_ASSET_BASE_URL,
     EMAIL_FORM_RESPONSE_ASSET_BASE_URL,
   } = process.env;
 
+  const isProduction = process.env.NODE_ENV === "production";
+
   if (!RESEND_API_KEY || !CONTACT_FROM_EMAIL) {
+    if (!isProduction) {
+      return json(res, 200, {
+        ok: true,
+        skipped: true,
+        warning: "Email delivery is not configured in local development.",
+      });
+    }
+
     return json(res, 500, {
       error: "Server is not configured for email delivery.",
     });
   }
 
   try {
-    const thankYouText = await getThankYouText(cleanName);
-    const assetBaseUrl = normalizeAssetBaseUrl(EMAIL_ASSET_BASE_URL);
-    const thankYouHtml = await getThankYouHtml(cleanName, assetBaseUrl);
+    const ownerRecipientEmail = sanitize(CONTACT_TO_EMAIL) || CONTACT_FROM_EMAIL;
 
-    const userEmailPayload = {
+    const ownerText = await getFormResponseText({
+      name: cleanName,
+      email: cleanEmail,
+      message: cleanMessage,
+    });
+    const ownerAssetBaseUrl = normalizeFormResponseAssetBaseUrl(
+      EMAIL_FORM_RESPONSE_ASSET_BASE_URL
+    );
+    const ownerHtml = await getFormResponseHtml({
+      name: cleanName,
+      email: cleanEmail,
+      message: cleanMessage,
+      assetBaseUrl: ownerAssetBaseUrl,
+      fallbackText: ownerText,
+    });
+
+    const ownerEmailPayload = {
       from: CONTACT_FROM_EMAIL,
-      to: [cleanEmail],
-      subject: "Thanks for contacting me",
-      text: thankYouText,
-      html: thankYouHtml,
+      to: [ownerRecipientEmail],
+      reply_to: cleanEmail,
+      subject: `New portfolio contact from ${cleanName}`,
+      text: ownerText,
+      html: ownerHtml,
     };
 
-    const requests = [sendWithResend(RESEND_API_KEY, userEmailPayload)];
-
-    if (CONTACT_TO_EMAIL) {
-      const ownerText = await getFormResponseText({
-        name: cleanName,
-        email: cleanEmail,
-        message: cleanMessage,
-      });
-      const ownerAssetBaseUrl = normalizeFormResponseAssetBaseUrl(EMAIL_FORM_RESPONSE_ASSET_BASE_URL);
-      const ownerHtml = await getFormResponseHtml({
-        name: cleanName,
-        email: cleanEmail,
-        message: cleanMessage,
-        assetBaseUrl: ownerAssetBaseUrl,
-        fallbackText: ownerText,
-      });
-
-      const ownerEmailPayload = {
-        from: CONTACT_FROM_EMAIL,
-        to: [CONTACT_TO_EMAIL],
-        reply_to: cleanEmail,
-        subject: `New portfolio contact from ${cleanName}`,
-        text: ownerText,
-        html: ownerHtml,
-      };
-
-      requests.push(sendWithResend(RESEND_API_KEY, ownerEmailPayload));
-    }
-
-    const responses = await Promise.all(requests);
-    const failedResponse = responses.find((item) => !item.ok);
+    const response = await sendWithResend(RESEND_API_KEY, ownerEmailPayload);
+    const failedResponse = response.ok ? null : response;
 
     if (failedResponse) {
       const errorBody = await failedResponse.text();
+
+      if (!isProduction) {
+        return json(res, 200, {
+          ok: true,
+          skipped: true,
+          warning: "Email provider rejected request in local development.",
+          details: errorBody,
+        });
+      }
+
       return json(res, 502, {
         error: "Email provider rejected the request.",
         details: errorBody,
@@ -260,6 +232,14 @@ export default async function handler(req, res) {
 
     return json(res, 200, { ok: true });
   } catch {
+    if (!isProduction) {
+      return json(res, 200, {
+        ok: true,
+        skipped: true,
+        warning: "Email send failed in local development.",
+      });
+    }
+
     return json(res, 500, { error: "Failed to send message." });
   }
 }

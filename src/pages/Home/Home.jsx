@@ -1,19 +1,11 @@
-import workList from "../../data/workList";
-import React, { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { Suspense, lazy, useEffect, useRef, useState } from "react";
 import "./Home.css";
 
-import AnimatedCopy from "../../components/AnimatedCopy/AnimatedCopy";
+import RevealText from "../../components/RevealText/RevealText";
 import Reviews from "../../components/Reviews/Reviews";
-import ContactForm from "../../components/ContactForm/ContactForm";
 import Footer from "../../components/Footer/Footer";
-import DotMatrix from "../../components/DotMatrix/DotMatrix";
-import Copy from "../../components/Copy/Copy";
+import TextReveal from "../../components/TextReveal/TextReveal";
 import BrandIcon from "../../components/BrandIcon/BrandIcon";
-import MarqueeBanner from "../../components/MarqueeBanner/MarqueeBanner";
-import SplitCardShowcase from "../../components/SplitCardShowcase/SplitCardShowcase";
-import TeamCards from "../../components/TeamCards/TeamCards";
-import FieldworkRoutine from "../../components/FieldworkRoutine/FieldworkRoutine";
 import { siteConfig } from "../../data";
 
 import gsap from "gsap";
@@ -22,10 +14,20 @@ import ReactLenis from "lenis/react";
 
 gsap.registerPlugin(ScrollTrigger);
 
-import Transition from "../../components/Transition/Transition";
+const DotMatrix = lazy(() => import("../../components/DotMatrix/DotMatrix"));
+const MarqueeBanner = lazy(() =>
+  import("../../components/MarqueeBanner/MarqueeBanner")
+);
+const SplitCardShowcase = lazy(() =>
+  import("../../components/SplitCardShowcase/SplitCardShowcase")
+);
+const TeamCards = lazy(() => import("../../components/TeamCards/TeamCards"));
+const ProjectCarousel = lazy(() =>
+  import("../../components/ProjectCarousel/ProjectCarousel")
+);
+const ContactForm = lazy(() => import("../../components/ContactForm/ContactForm"));
 
 const Home = ({ isPreloaderComplete = false }) => {
-  const workItems = Array.isArray(workList) ? workList : [];
   const stickyTitlesRef = useRef(null);
   const titlesRef = useRef([]);
   const stickyWorkHeaderRef = useRef(null);
@@ -157,6 +159,7 @@ const Home = ({ isPreloaderComplete = false }) => {
     <ReactLenis root>
       <div className="page home">
         <section className="hero">
+          <Suspense fallback={null}>
             {isPreloaderComplete && (
               <DotMatrix
                 color="#969992"
@@ -166,6 +169,7 @@ const Home = ({ isPreloaderComplete = false }) => {
                 delay={isInitialLoad ? 2 : 0.5}
               />
             )}
+          </Suspense>
 
           <div className="hero-center">
             <h1>{siteConfig.person.firstName}</h1>
@@ -186,59 +190,69 @@ const Home = ({ isPreloaderComplete = false }) => {
         <section className="about">
         <div className="container">
           <div className="about-copy">
-            <Copy type="flicker">
+            <TextReveal type="flicker">
               <p>Design. Code. Create.</p>
-            </Copy>
-            <Copy>
+            </TextReveal>
+            <TextReveal>
               <h3>
                 Creating experiences that go beyond the screen.
               </h3>
-            </Copy>
+            </TextReveal>
             <div className="about-icon">
               <BrandIcon />
             </div>
           </div>
         </div>
         <div className="section-footer light">
-          <Copy type="flicker">
+          <TextReveal type="flicker">
             <p>/ Core State /</p>
-          </Copy>
+          </TextReveal>
         </div>
       </section>
 
-      <MarqueeBanner />
-      <SplitCardShowcase />
-      <TeamCards />
-      <FieldworkRoutine />  
+      <Suspense fallback={null}>
+        <MarqueeBanner />
+      </Suspense>
+      <Suspense fallback={null}>
+        <SplitCardShowcase />
+      </Suspense>
+      <Suspense fallback={null}>
+        <TeamCards />
+      </Suspense>
+      <Suspense fallback={null}>
+        <ProjectCarousel />
+      </Suspense>
 
         <section className="hobbies">
           <div className="hobby">
-            <AnimatedCopy tag="h4" animateOnScroll={true}>
+            <RevealText tag="h4" animateOnScroll={true}>
               {siteConfig.home.hobbies[0]}
-            </AnimatedCopy>
+            </RevealText>
           </div>
           <div className="hobby">
-            <AnimatedCopy tag="h4" animateOnScroll={true}>
+            <RevealText tag="h4" animateOnScroll={true}>
               {siteConfig.home.hobbies[1]}
-            </AnimatedCopy>
+            </RevealText>
           </div>
           <div className="hobby">
-            <AnimatedCopy tag="h4" animateOnScroll={true}>
+            <RevealText tag="h4" animateOnScroll={true}>
               {siteConfig.home.hobbies[2]}
-            </AnimatedCopy>
+            </RevealText>
           </div>
           <div className="hobby">
-            <AnimatedCopy tag="h4" animateOnScroll={true}>
+            <RevealText tag="h4" animateOnScroll={true}>
               {siteConfig.home.hobbies[3]}
-            </AnimatedCopy>
+            </RevealText>
           </div>
         </section>
 
-        <ContactForm />
+        <Suspense fallback={null}>
+          <ContactForm />
+        </Suspense>
         <Footer />
       </div>
     </ReactLenis>
   );
 };
 
-export default Transition(Home);
+export default Home;

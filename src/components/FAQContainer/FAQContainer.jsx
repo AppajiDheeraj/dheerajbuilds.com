@@ -1,12 +1,12 @@
 import { faqItems } from "../../data/faqs.js";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useCallback, useState, useRef, useEffect } from "react";
 import "./FAQContainer.css";
-import AnimatedCopy from "../AnimatedCopy/AnimatedCopy.jsx";
+import RevealText from "../RevealText/RevealText.jsx";
 import { ArrowRight } from "lucide-react";
 import gsap from "gsap";
 
 const FAQContainer = ({ title = true, fullWidth = false }) => {
-  const [activeIndices, setActiveIndices] = useState([]);
+  const [, setActiveIndices] = useState([]);
   const iconRefs = useRef([]);
   const contentRefs = useRef([]);
   const faqItemsRef = useRef([]);
@@ -33,25 +33,27 @@ const FAQContainer = ({ title = true, fullWidth = false }) => {
     );
   }, []);
 
-  const toggleFAQ = (index) => {
-    if (activeIndices.includes(index)) {
-      gsap.to(iconRefs.current[index], {
-        rotation: 0,
-        duration: 0.3,
-        ease: "power2.out",
-      });
+  const toggleFAQ = useCallback((index) => {
+    setActiveIndices((prev) => {
+      if (prev.includes(index)) {
+        gsap.to(iconRefs.current[index], {
+          rotation: 0,
+          duration: 0.3,
+          ease: "power2.out",
+        });
 
-      gsap.to(contentRefs.current[index], {
-        height: 0,
-        opacity: 0,
-        duration: 0.4,
-        ease: "power2.out",
-        paddingTop: 0,
-        paddingBottom: 0,
-      });
+        gsap.to(contentRefs.current[index], {
+          height: 0,
+          opacity: 0,
+          duration: 0.4,
+          ease: "power2.out",
+          paddingTop: 0,
+          paddingBottom: 0,
+        });
 
-      setActiveIndices(activeIndices.filter((i) => i !== index));
-    } else {
+        return prev.filter((i) => i !== index);
+      }
+
       gsap.to(iconRefs.current[index], {
         rotation: 90,
         duration: 0.3,
@@ -69,18 +71,18 @@ const FAQContainer = ({ title = true, fullWidth = false }) => {
         paddingBottom: "0.5em",
       });
 
-      setActiveIndices([...activeIndices, index]);
-    }
-  };
+      return [...prev, index];
+    });
+  }, []);
 
   return (
     <div className="faq-container">
       <div className={`faq-wrapper ${fullWidth ? "full-width" : "contained"}`}>
         {title && (
           <div className="faq-title">
-            <AnimatedCopy tag="h2" animateOnScroll={false} delay={1}>
+            <RevealText tag="h2" animateOnScroll={false} delay={1}>
               Frequently <br /> Asked Questions
-            </AnimatedCopy>
+            </RevealText>
           </div>
         )}
 

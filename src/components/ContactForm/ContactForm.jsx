@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import "./ContactForm.css";
 import { siteConfig } from "../../data";
 
@@ -14,12 +14,12 @@ const ContactForm = () => {
   const [submitMessage, setSubmitMessage] = useState("");
   const [isError, setIsError] = useState(false);
 
-  const handleChange = (event) => {
+  const handleChange = useCallback((event) => {
     const { name, value } = event.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  }, []);
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = useCallback(async (event) => {
     event.preventDefault();
 
     setIsSubmitting(true);
@@ -63,7 +63,7 @@ const ContactForm = () => {
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [formData]);
 
   return (
     <div className="contact-form">

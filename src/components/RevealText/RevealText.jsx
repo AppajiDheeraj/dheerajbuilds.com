@@ -1,5 +1,5 @@
 "use client";
-import "./AnimatedH1.css";
+import "./RevealText.css";
 import { useEffect, useRef, useState } from "react";
 
 import gsap from "gsap";
@@ -9,32 +9,33 @@ import SplitType from "split-type";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-const AnimatedH1 = ({
+const RevealText = ({
   children,
   className = "",
   delay = 0,
   duration = 1,
   ease = "power4.out",
-  stagger = 0.1,
+  stagger = 0.05,
   lineSelector = "",
-  animateOnScroll = false,
+  animateOnScroll = true,
   direction = "bottom",
+  tag = "p",
 }) => {
-  const headingRef = useRef(null);
-  const [headingId, setHeadingId] = useState(null);
+  const copyRef = useRef(null);
+  const [copyId, setCopyId] = useState(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const textSplitRef = useRef(null);
 
   useEffect(() => {
-    setHeadingId(`h1-${Math.floor(Math.random() * 10000)}`);
+    setCopyId(`copy-${Math.floor(Math.random() * 10000)}`);
   }, []);
 
   useEffect(() => {
-    if (!headingId || !headingRef.current) return;
+    if (!copyId || !copyRef.current) return;
 
-    const lineClass = `line-${headingId}`;
+    const lineClass = `line-${copyId}`;
 
-    const text = new SplitType(headingRef.current, {
+    const text = new SplitType(copyRef.current, {
       types: "lines",
       lineClass: lineClass,
     });
@@ -46,13 +47,12 @@ const AnimatedH1 = ({
 
     lines.forEach((line) => {
       const content = line.innerHTML;
-
-      line.innerHTML = `<span class="line-inner-${headingId}">${content}</span>`;
+      line.innerHTML = `<span class="line-inner-${copyId}">${content}</span>`;
     });
 
     const initialY = direction === "top" ? "-100%" : "100%";
 
-    gsap.set(`.line-inner-${headingId}`, {
+    gsap.set(`.line-inner-${copyId}`, {
       y: initialY,
       display: "block",
     });
@@ -62,30 +62,29 @@ const AnimatedH1 = ({
     return () => {
       if (textSplitRef.current) textSplitRef.current.revert();
     };
-  }, [headingId, lineSelector, direction]);
+  }, [copyId, lineSelector, direction]);
 
   useGSAP(
     () => {
-      if (!isInitialized || !headingRef.current) return;
+      if (!isInitialized || !copyRef.current) return;
 
       const tl = gsap.timeline({
         defaults: {
           ease,
           duration,
         },
-
         ...(animateOnScroll
           ? {
               scrollTrigger: {
-                trigger: headingRef.current,
-                start: "top 75%",
+                trigger: copyRef.current,
+                start: "top 80%",
                 toggleActions: "play none none none",
               },
             }
           : {}),
       });
 
-      tl.to(`.line-inner-${headingId}`, {
+      tl.to(`.line-inner-${copyId}`, {
         y: "0%",
         stagger,
         delay,
@@ -94,13 +93,13 @@ const AnimatedH1 = ({
       return () => {
         if (animateOnScroll) {
           ScrollTrigger.getAll()
-            .filter((st) => st.vars.trigger === headingRef.current)
+            .filter((st) => st.vars.trigger === copyRef.current)
             .forEach((st) => st.kill());
         }
       };
     },
     {
-      scope: headingRef,
+      scope: copyRef,
       dependencies: [
         isInitialized,
         animateOnScroll,
@@ -113,15 +112,17 @@ const AnimatedH1 = ({
     }
   );
 
+  const Tag = tag;
+
   return (
-    <h1
-      ref={headingRef}
-      className={`animated-h1 ${className}`}
-      data-heading-id={headingId}
+    <Tag
+      ref={copyRef}
+      className={`animated-copy ${className}`}
+      data-copy-id={copyId}
     >
       {children}
-    </h1>
+    </Tag>
   );
 };
 
-export default AnimatedH1;
+export default RevealText;

@@ -91,6 +91,28 @@
   gap: 0.75em;
 }
 
+.contact-form-col form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9em;
+}
+
+.form-item {
+  width: 100%;
+}
+
+.form-item input,
+.form-item textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-item textarea {
+  min-height: 10rem;
+  resize: vertical;
+}
+
 .form-item .btn {
   width: 100%;
 }

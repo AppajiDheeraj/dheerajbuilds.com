@@ -1,26 +1,28 @@
 import "./App.css";
 import { Routes, Route, useLocation } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, lazy, useEffect, useRef, useState } from "react";
 
 import NavBar from "./components/NavBar/NavBar";
 import Preloader from "./components/Preloader/Preloader";
 
-import Home from "./pages/Home/Home";
-import Work from "./pages/Work/Work";
-import Project from "./pages/Project/Project";
-import About from "./pages/About/About";
-import FAQ from "./pages/FAQ/FAQ";
-import Contact from "./pages/Contact/Contact";
-
-import { AnimatePresence } from "framer-motion";
+const Home = lazy(() => import("./pages/Home/Home"));
+const Work = lazy(() => import("./pages/Work/Work"));
+const Project = lazy(() => import("./pages/Project/Project"));
+const About = lazy(() => import("./pages/About/About"));
+const FAQ = lazy(() => import("./pages/FAQ/FAQ"));
+const Contact = lazy(() => import("./pages/Contact/Contact"));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    setTimeout(() => {
+    const id = requestAnimationFrame(() => {
       window.scrollTo(0, 0);
-    }, 1400);
+    });
+
+    return () => {
+      cancelAnimationFrame(id);
+    };
   }, [pathname]);
 
   return null;
@@ -62,7 +64,7 @@ function App() {
       <div className={`app-shell ${isPreloaderComplete ? "ready" : ""}`}>
         <ScrollToTop />
         <NavBar />
-        <AnimatePresence mode="wait" initial={false}>
+        <Suspense fallback={null}>
           <Routes location={location} key={location.pathname}>
             <Route
               path="/"
@@ -74,7 +76,7 @@ function App() {
             <Route path="/work" element={<Work />} />
             <Route path="/sample-project" element={<Project />} />
           </Routes>
-        </AnimatePresence>
+        </Suspense>
       </div>
     </>
   );

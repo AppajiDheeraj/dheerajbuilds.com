@@ -2,28 +2,26 @@ import React from "react";
 import "./Project.css";
 
 import ParallaxImage from "../../components/ParallaxImage/ParallaxImage";
-import AnimatedCopy from "../../components/AnimatedCopy/AnimatedCopy";
+import RevealText from "../../components/RevealText/RevealText";
 import { siteConfig } from "../../data";
 
 import ReactLenis from "lenis/react";
-
-import Transition from "../../components/Transition/Transition";
 
 const Project = () => {
   return (
     <ReactLenis root>
       <div className="page project">
         <section className="project-header">
-          <AnimatedCopy
+          <RevealText
             delay={1}
             animateOnScroll={false}
             className="primary sm"
           >
             Short film on self-discovery
-          </AnimatedCopy>
-          <AnimatedCopy tag="h2" delay={1}>
+          </RevealText>
+          <RevealText tag="h2" delay={1}>
             Fragments of Light
-          </AnimatedCopy>
+          </RevealText>
         </section>
 
         <section className="project-banner-img">
@@ -34,50 +32,50 @@ const Project = () => {
 
         <section className="project-details">
           <div className="details">
-            <AnimatedCopy tag="p" animateOnScroll={true} className="primary sm">
+            <RevealText tag="p" animateOnScroll={true} className="primary sm">
               Overview
-            </AnimatedCopy>
-            <AnimatedCopy tag="h4" animateOnScroll={true}>
+            </RevealText>
+            <RevealText tag="h4" animateOnScroll={true}>
               A visual meditation on identity, *Fragments of Light* explores the
               quiet journey of self-discovery through minimalism, mood, and
               motion.
-            </AnimatedCopy>
+            </RevealText>
           </div>
 
           <div className="details">
-            <AnimatedCopy tag="p" animateOnScroll={true} className="primary sm">
+            <RevealText tag="p" animateOnScroll={true} className="primary sm">
               Year
-            </AnimatedCopy>
-            <AnimatedCopy tag="h4" animateOnScroll={true}>
+            </RevealText>
+            <RevealText tag="h4" animateOnScroll={true}>
               2024
-            </AnimatedCopy>
+            </RevealText>
           </div>
 
           <div className="details">
-            <AnimatedCopy tag="p" animateOnScroll={true} className="primary sm">
+            <RevealText tag="p" animateOnScroll={true} className="primary sm">
               Category
-            </AnimatedCopy>
-            <AnimatedCopy tag="h4" animateOnScroll={true}>
+            </RevealText>
+            <RevealText tag="h4" animateOnScroll={true}>
               Short Film
-            </AnimatedCopy>
+            </RevealText>
           </div>
 
           <div className="details">
-            <AnimatedCopy tag="p" animateOnScroll={true} className="primary sm">
+            <RevealText tag="p" animateOnScroll={true} className="primary sm">
               Running Time
-            </AnimatedCopy>
-            <AnimatedCopy tag="h4" animateOnScroll={true}>
+            </RevealText>
+            <RevealText tag="h4" animateOnScroll={true}>
               6:30
-            </AnimatedCopy>
+            </RevealText>
           </div>
 
           <div className="details">
-            <AnimatedCopy tag="p" animateOnScroll={true} className="primary sm">
+            <RevealText tag="p" animateOnScroll={true} className="primary sm">
               Directed by
-            </AnimatedCopy>
-            <AnimatedCopy tag="h4" animateOnScroll={true}>
+            </RevealText>
+            <RevealText tag="h4" animateOnScroll={true}>
               {siteConfig.person.fullName}
-            </AnimatedCopy>
+            </RevealText>
           </div>
         </section>
 
@@ -117,58 +115,58 @@ const Project = () => {
 
         <section className="project-details">
           <div className="details">
-            <AnimatedCopy tag="p" animateOnScroll={true} className="primary sm">
+            <RevealText tag="p" animateOnScroll={true} className="primary sm">
               Editor
-            </AnimatedCopy>
-            <AnimatedCopy tag="h4" animateOnScroll={true}>
+            </RevealText>
+            <RevealText tag="h4" animateOnScroll={true}>
               {siteConfig.person.fullName}
-            </AnimatedCopy>
+            </RevealText>
           </div>
 
           <div className="details">
-            <AnimatedCopy tag="p" animateOnScroll={true} className="primary sm">
+            <RevealText tag="p" animateOnScroll={true} className="primary sm">
               Sound Design
-            </AnimatedCopy>
-            <AnimatedCopy tag="h4" animateOnScroll={true}>
+            </RevealText>
+            <RevealText tag="h4" animateOnScroll={true}>
               Elena Brooks
-            </AnimatedCopy>
+            </RevealText>
           </div>
 
           <div className="details">
-            <AnimatedCopy tag="p" animateOnScroll={true} className="primary sm">
+            <RevealText tag="p" animateOnScroll={true} className="primary sm">
               Art Director
-            </AnimatedCopy>
-            <AnimatedCopy tag="h4" animateOnScroll={true}>
+            </RevealText>
+            <RevealText tag="h4" animateOnScroll={true}>
               Milo Vance
-            </AnimatedCopy>
+            </RevealText>
           </div>
 
           <div className="details">
-            <AnimatedCopy tag="p" animateOnScroll={true} className="primary sm">
+            <RevealText tag="p" animateOnScroll={true} className="primary sm">
               Producer
-            </AnimatedCopy>
-            <AnimatedCopy tag="h4" animateOnScroll={true}>
+            </RevealText>
+            <RevealText tag="h4" animateOnScroll={true}>
               Asha Lennox
-            </AnimatedCopy>
+            </RevealText>
           </div>
 
           <div className="details">
-            <AnimatedCopy tag="p" animateOnScroll={true} className="primary sm">
+            <RevealText tag="p" animateOnScroll={true} className="primary sm">
               Director
-            </AnimatedCopy>
-            <AnimatedCopy tag="h4" animateOnScroll={true}>
+            </RevealText>
+            <RevealText tag="h4" animateOnScroll={true}>
               {siteConfig.person.fullName}
-            </AnimatedCopy>
+            </RevealText>
           </div>
         </section>
 
         <section className="next-project">
-          <AnimatedCopy tag="p" animateOnScroll={true} className="primary sm">
+          <RevealText tag="p" animateOnScroll={true} className="primary sm">
             02 - 05
-          </AnimatedCopy>
-          <AnimatedCopy tag="h3" animateOnScroll={true}>
+          </RevealText>
+          <RevealText tag="h3" animateOnScroll={true}>
             Next
-          </AnimatedCopy>
+          </RevealText>
 
           <div className="next-project-img">
             <div className="next-project-img-wrapper">
@@ -176,13 +174,13 @@ const Project = () => {
             </div>
           </div>
 
-          <AnimatedCopy tag="h4" animateOnScroll={true}>
+          <RevealText tag="h4" animateOnScroll={true}>
             Market Pulse
-          </AnimatedCopy>
+          </RevealText>
         </section>
       </div>
     </ReactLenis>
   );
 };
 
-export default Transition(Project);
+export default Project;

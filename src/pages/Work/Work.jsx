@@ -3,8 +3,6 @@ import React, { useState } from "react";
 import "./Work.css";
 import { Github } from "lucide-react";
 
-import Transition from "../../components/Transition/Transition";
-
 const Work = () => {
   const [activeProject, setActiveProject] = useState(projects[0]);
 
@@ -48,4 +46,4 @@ const Work = () => {
   );
 };
 
-export default Transition(Work);
+export default Work;

@@ -27,7 +27,7 @@ const Preloader = ({ onAnimationComplete }) => {
     () => {
       if (!showPreloader) return;
 
-      document.fonts.ready.then(() => {
+      const startAnimation = () => {
         const logoSplit = SplitText.create(".preloader-logo h1", {
           type: "chars",
           charsClass: "char",
@@ -97,7 +97,13 @@ const Preloader = ({ onAnimationComplete }) => {
             },
             "<"
           );
-      });
+      };
+
+      if (document.fonts.status === "loaded") {
+        startAnimation();
+      } else {
+        document.fonts.ready.then(startAnimation);
+      }
     },
     { scope: wrapperRef, dependencies: [showPreloader, onAnimationComplete] }
   );

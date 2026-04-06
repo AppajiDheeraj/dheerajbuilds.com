@@ -1,7 +1,7 @@
 import "./MarqueeBanner.css";
 import { useRef } from "react";
 
-import Copy from "../Copy/Copy";
+import TextReveal from "../TextReveal/TextReveal";
 
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -47,9 +47,9 @@ const MarqueeBanner = () => {
       </div>
       <div className="banner">
         <div className="banner-content">
-          <Copy>
+          <TextReveal>
             <h4>Crafting systems that feels alive</h4>
-          </Copy>
+          </TextReveal>
         </div>
         <div className="banner-img">
           <img src="/marquee-banner/marquee_banner_01.png" alt="" />

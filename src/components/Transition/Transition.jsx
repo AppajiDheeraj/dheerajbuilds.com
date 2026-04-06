@@ -1,7 +1,7 @@
 import "./Transition.css";
 
-const Transition = (Page) => {
-  return (props) => <Page {...props} />;
+const Transition = (pageComponent) => {
+  return (props) => pageComponent(props);
 };
 
 export default Transition;

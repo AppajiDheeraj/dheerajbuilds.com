@@ -1,5 +1,5 @@
 "use client";
-import "./Copy.css";
+import "./TextReveal.css";
 import React, { useRef } from "react";
 
 import gsap from "gsap";
@@ -9,7 +9,7 @@ import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(SplitText, ScrollTrigger);
 
-export default function Copy({
+export default function TextReveal({
   children,
   animateOnScroll = true,
   delay = 0,
