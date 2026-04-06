@@ -27,6 +27,7 @@ const RevealText = ({
   const textSplitRef = useRef(null);
 
   useEffect(() => {
+    // Unique id keeps per-instance line wrappers isolated across multiple RevealText blocks.
     setCopyId(`copy-${Math.floor(Math.random() * 10000)}`);
   }, []);
 
@@ -92,6 +93,7 @@ const RevealText = ({
 
       return () => {
         if (animateOnScroll) {
+          // Cleanup only triggers tied to this element to avoid affecting unrelated animations.
           ScrollTrigger.getAll()
             .filter((st) => st.vars.trigger === copyRef.current)
             .forEach((st) => st.kill());

@@ -16,6 +16,7 @@ function ScrollToTop() {
   const { pathname } = useLocation();
 
   useEffect(() => {
+    // Delay to next frame avoids fighting in-progress route transition paints.
     const id = requestAnimationFrame(() => {
       window.scrollTo(0, 0);
     });
@@ -34,6 +35,7 @@ function App() {
   const previousTitleRef = useRef(document.title);
 
   useEffect(() => {
+    // Preserve the original title so tab visibility messaging stays reversible.
     const handleVisibilityChange = () => {
       if (document.hidden) {
         previousTitleRef.current = document.title;

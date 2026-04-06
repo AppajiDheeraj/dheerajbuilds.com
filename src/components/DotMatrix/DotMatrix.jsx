@@ -26,6 +26,7 @@ const DotMatrix = ({
   const rgbColor = useMemo(() => hexToRgb(color), [color]);
 
   const shaderCode = useMemo(() => {
+    // Parameters are injected into GLSL so page sections can coordinate reveal timing.
     const glslDelay = Number(delay).toFixed(2);
     const glslSpeed = Number(speed).toFixed(2);
 
@@ -38,6 +39,7 @@ const DotMatrix = ({
 
   const opacityLayers = useMemo(
     () => [
+      // Layered opacities create depth without increasing shader complexity.
       opacity * 0.4,
       opacity * 0.4,
       opacity * 0.65,

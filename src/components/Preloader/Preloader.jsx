@@ -14,6 +14,7 @@ const Preloader = ({ onAnimationComplete }) => {
   const lenis = useLenis();
 
   useEffect(() => {
+    // Lock both Lenis and native scroll so users cannot bypass the intro state.
     if (loaderAnimating) {
       if (lenis) lenis.stop();
       document.body.style.overflow = "hidden";
@@ -39,6 +40,7 @@ const Preloader = ({ onAnimationComplete }) => {
 
         function animateProgress(duration = 4.9) {
           const tl = gsap.timeline();
+          // Keep progress timing centralized so visual pacing can be tuned in one place.
           tl.to(".preloader-progress-bar", {
             scaleX: 1,
             duration,

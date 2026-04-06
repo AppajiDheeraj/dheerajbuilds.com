@@ -20,6 +20,7 @@ const Reviews = () => {
       return;
     }
 
+    // Guard against rapid clicks that would overlap outgoing and incoming text timelines.
     if (animationInProgressRef.current) return;
     animationInProgressRef.current = true;
 
@@ -72,6 +73,7 @@ const Reviews = () => {
       });
     }
 
+    // Build the incoming review node first, then animate in and prune older nodes.
     const newReviewItem = document.createElement("div");
     newReviewItem.className = "review-item";
 

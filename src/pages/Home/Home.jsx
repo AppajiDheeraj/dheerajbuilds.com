@@ -35,6 +35,7 @@ const Home = ({ isPreloaderComplete = false }) => {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
+    // Only run the long hero intro once per browser session to keep return visits snappy.
     const hasSeenHomeMatrix = sessionStorage.getItem("home-dot-matrix-seen");
 
     if (hasSeenHomeMatrix) {
@@ -64,6 +65,7 @@ const Home = ({ isPreloaderComplete = false }) => {
     gsap.set(titles[1], { opacity: 0, scale: 0.75 });
     gsap.set(titles[2], { opacity: 0, scale: 0.75 });
 
+    // Pin + timeline sequence drives the staged title handoff while scrolling.
     const pinTrigger = ScrollTrigger.create({
       trigger: stickySection,
       start: "top top",
@@ -132,6 +134,7 @@ const Home = ({ isPreloaderComplete = false }) => {
 
     let workHeaderPinTrigger;
     if (workHeaderSection && homeWorkSection) {
+      // Keep section label visible while cards advance underneath.
       workHeaderPinTrigger = ScrollTrigger.create({
         trigger: workHeaderSection,
         start: "top top",

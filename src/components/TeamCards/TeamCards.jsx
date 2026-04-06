@@ -34,6 +34,7 @@ export default function TeamCards() {
         let cardEndX = -650;
 
         const measure = () => {
+          // Measurements are runtime-derived so card travel remains proportional across screens.
           stickyHeight = window.innerHeight * 5;
           const headerWidth = stickyHeader ? stickyHeader.offsetWidth : 0;
           maxTranslate = Math.max(0, headerWidth - window.innerWidth);
@@ -90,6 +91,7 @@ export default function TeamCards() {
           onUpdate: (self) => {
             const progress = self.progress;
 
+            // Header and cards share scroll progress to preserve a single coherent motion system.
             const translateX = -progress * maxTranslate;
             gsap.set(stickyHeader, { x: translateX });
 

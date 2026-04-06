@@ -54,6 +54,7 @@ const SplitCardShowcase = () => {
         });
 
         timeline
+          // First phase reveals heading and compresses layout before card flips begin.
           .to(
             stickyHeaderRef.current,
             {
@@ -122,6 +123,7 @@ const SplitCardShowcase = () => {
       });
 
       mm.add("(max-width: 999px)", () => {
+        // Mobile layout intentionally disables pin/3D effects for smoother touch scrolling.
         gsap.set([stickyHeaderRef.current, cardContainerRef.current, ...cardRefs.current], {
           clearProps: "all",
         });

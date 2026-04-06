@@ -26,6 +26,7 @@ const ProjectCarousel = () => {
 
         if (!section || !stage || !track) return;
 
+        // Distance is computed on demand so refreshes reflect dynamic content widths.
         const getDistance = () => Math.max(0, track.scrollWidth - stage.clientWidth);
         const getEndDistance = () =>
           Math.max(getDistance() + window.innerHeight * 0.35, window.innerHeight * 0.8);
@@ -54,6 +55,7 @@ const ProjectCarousel = () => {
 
       mm.add("(max-width: 999px)", () => {
         if (trackRef.current) {
+          // Mobile keeps native vertical flow instead of pinned horizontal motion.
           gsap.set(trackRef.current, { clearProps: "transform" });
         }
       });

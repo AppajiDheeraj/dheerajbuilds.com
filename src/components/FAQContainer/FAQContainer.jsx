@@ -16,6 +16,7 @@ const FAQContainer = ({ title = true, fullWidth = false }) => {
     contentRefs.current = contentRefs.current.slice(0, faqItems.length);
     faqItemsRef.current = faqItemsRef.current.slice(0, faqItems.length);
 
+    // Entrance stagger keeps the list readable while preserving perceived motion.
     gsap.fromTo(
       faqItemsRef.current,
       {
@@ -62,6 +63,7 @@ const FAQContainer = ({ title = true, fullWidth = false }) => {
 
       const contentHeight = contentRefs.current[index].scrollHeight;
 
+      // Measure real content height so expanded state works with variable answer lengths.
       gsap.to(contentRefs.current[index], {
         height: contentHeight + 24,
         opacity: 1,

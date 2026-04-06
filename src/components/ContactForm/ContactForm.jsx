@@ -39,6 +39,7 @@ const ContactForm = () => {
       let result = {};
 
       if (rawBody) {
+        // Guard against non-JSON error pages returned by proxies/platform middleware.
         try {
           result = JSON.parse(rawBody);
         } catch {
@@ -97,6 +98,7 @@ const ContactForm = () => {
 
         <div className="contact-form-col">
           <form onSubmit={handleSubmit}>
+            {/* Honeypot input helps filter basic bots without adding user-visible friction. */}
             <input
               type="text"
               name="company"

@@ -21,6 +21,7 @@ export default function TextReveal({
 
   const waitForFonts = async () => {
     try {
+      // Split calculations are font-sensitive; wait to avoid broken line wraps.
       const customFonts = ["Koulen", "Host Grotesk", "DM Mono"];
       const fontReadyPromise = document.fonts.ready;
       const fontCheckPromises = customFonts.map((fontFamily) =>
@@ -51,6 +52,7 @@ export default function TextReveal({
         if (containerRef.current.hasAttribute("data-copy-wrapper")) {
           elements = Array.from(containerRef.current.children);
         } else {
+          // Single-child usage animates the element itself without extra wrapper styles.
           elements = [containerRef.current];
         }
 

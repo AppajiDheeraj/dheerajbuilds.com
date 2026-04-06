@@ -45,6 +45,7 @@ const NavBar = () => {
 
   // Auto-close menu on route change
   useEffect(() => {
+    // Route changes should always collapse the overlay to prevent stale open state.
     if (location.pathname !== previousPathRef.current && isOpen) {
       closeMenu(true);
     }
@@ -115,6 +116,7 @@ const NavBar = () => {
     let lastScrollY = window.scrollY;
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
+      // Hide nav on downward scroll for content focus; reveal immediately when user scrolls up.
       if (currentScrollY > lastScrollY && currentScrollY > 100) {
         menuRef.current.classList.add("hidden");
       } else {
@@ -196,6 +198,7 @@ const NavBar = () => {
     if (isAnimating.current) return;
 
     if (immediate) {
+      // Immediate close is used for outside clicks and route changes to avoid visual lag.
       isAnimating.current = false;
       setIsOpen(false);
       gsap.killTweensOf(menuOverlayRef.current);
