@@ -4,10 +4,13 @@ import "./NavBar.css";
 import { gsap } from "gsap";
 import { SplitText } from "gsap/SplitText";
 import { FileDown } from "lucide-react";
+import { preloadRoute } from "../../utils/routePreload";
+import { siteConfig } from "../../data";
 
 gsap.registerPlugin(SplitText);
 
 const NavBar = () => {
+  const { navigation } = siteConfig;
   const menuRef = useRef(null);
   const menuHeaderRef = useRef(null);
   const menuOverlayRef = useRef(null);
@@ -257,15 +260,21 @@ const NavBar = () => {
     closeMenu(true);
   };
 
+  const getMenuLinkHandlers = (path) => ({
+    onMouseEnter: () => preloadRoute(path),
+    onFocus: () => preloadRoute(path),
+    onTouchStart: () => preloadRoute(path),
+  });
+
   return (
     <>
       <div className="top-corner-badge top-corner-badge-left" aria-hidden="true">
-        APPAJI
+        {navigation.badgeLabel}
       </div>
 
       <a
         className="top-corner-badge top-corner-badge-right"
-        href="/Appaji_Dheeraj_Resume.pdf"
+        href={navigation.resumePath}
         download
         aria-label="Download resume"
       >
@@ -294,32 +303,27 @@ const NavBar = () => {
         <div className="menu-overlay" ref={menuOverlayRef}>
           <nav className="menu-nav">
             <ul>
-              <li key="Home" ref={(el) => (menuItemsRef.current[0] = el)}>
-                <Link to="/" onClick={handleMenuLinkClick}>Home</Link>
-              </li>
-              <li key="Work" ref={(el) => (menuItemsRef.current[1] = el)}>
-                <Link to="/work" onClick={handleMenuLinkClick}>Work</Link>
-              </li>
-              <li key="About" ref={(el) => (menuItemsRef.current[2] = el)}>
-                <Link to="/about" onClick={handleMenuLinkClick}>About</Link>
-              </li>
-              <li key="Contact" ref={(el) => (menuItemsRef.current[3] = el)}>
-                <Link to="/contact" onClick={handleMenuLinkClick}>Contact</Link>
-              </li>
-              <li key="FAQ" ref={(el) => (menuItemsRef.current[4] = el)}>
-                <Link to="/faq" onClick={handleMenuLinkClick}>FAQ</Link>
-              </li>
+              {navigation.menuItems.map((item, index) => (
+                <li key={item.label} ref={(el) => (menuItemsRef.current[index] = el)}>
+                  <Link
+                    to={item.to}
+                    onClick={handleMenuLinkClick}
+                    {...getMenuLinkHandlers(item.to)}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </nav>
 
           <div className="menu-footer" ref={menuFooterRef}>
             <div className="menu-social">
-              <a href="https://www.instagram.com/appaji_dheeraj/">
-                <span>&#9654;</span> Instagram
-              </a>
-              <a href="https://www.linkedin.com/in/appaji-dheeraj/">
-                <span>&#9654;</span> LinkedIn
-              </a>
+              {navigation.socialLinks.map((social) => (
+                <a key={social.label} href={social.href}>
+                  <span>&#9654;</span> {social.label}
+                </a>
+              ))}
             </div>
             <div className="menu-time" ref={timeRef}></div>
           </div>

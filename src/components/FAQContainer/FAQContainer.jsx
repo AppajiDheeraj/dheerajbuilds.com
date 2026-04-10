@@ -1,4 +1,5 @@
 import { faqItems } from "../../data/faqs.js";
+import { siteConfig } from "../../data";
 import React, { useCallback, useState, useRef, useEffect } from "react";
 import "./FAQContainer.css";
 import RevealText from "../RevealText/RevealText.jsx";
@@ -6,6 +7,7 @@ import { ArrowRight } from "lucide-react";
 import gsap from "gsap";
 
 const FAQContainer = ({ title = true, fullWidth = false }) => {
+  const { faq } = siteConfig;
   const [, setActiveIndices] = useState([]);
   const iconRefs = useRef([]);
   const contentRefs = useRef([]);
@@ -29,7 +31,7 @@ const FAQContainer = ({ title = true, fullWidth = false }) => {
         duration: 0.6,
         ease: "power2.out",
         stagger: 0.1,
-        delay: 1.25,
+        delay: 0.1,
       }
     );
   }, []);
@@ -82,8 +84,8 @@ const FAQContainer = ({ title = true, fullWidth = false }) => {
       <div className={`faq-wrapper ${fullWidth ? "full-width" : "contained"}`}>
         {title && (
           <div className="faq-title">
-            <RevealText tag="h2" animateOnScroll={false} delay={1}>
-              Frequently <br /> Asked Questions
+            <RevealText tag="h2" animateOnScroll={false} delay={0}>
+              {faq.titleLine1} <br /> {faq.titleLine2}
             </RevealText>
           </div>
         )}

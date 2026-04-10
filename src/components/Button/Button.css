@@ -1,0 +1,168 @@
+.button {
+  position: relative;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--base-400);
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.button .button-label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: max-content;
+  min-height: 1.1rem;
+  color: var(--base-400);
+  font-family: "Messina Sans Mono";
+  font-size: 0.9rem;
+  font-weight: 600;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.025rem;
+  line-height: 1;
+}
+
+.button .button-label-inner {
+  display: inline-block;
+  line-height: 1;
+  vertical-align: top;
+  text-decoration: none;
+}
+
+.button::after {
+  content: "";
+  position: absolute;
+  width: calc(100% - 2rem);
+  height: 0.1rem;
+  bottom: -0.15rem;
+  left: 0;
+  background: var(--base-400);
+  transform: scaleX(0);
+  transform-origin: bottom right;
+  transition: transform 0.25s ease-out;
+  will-change: transform;
+  pointer-events: none;
+}
+
+.button:hover::after,
+.button:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+.button:hover .button-label-inner,
+.button:focus-visible .button-label-inner {
+  text-decoration: underline;
+  text-decoration-thickness: 0.08rem;
+  text-underline-offset: 0.28rem;
+}
+
+.button .button-icon {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  align-self: center;
+  flex-shrink: 0;
+  transition: transform 0.6s ease-out;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  will-change: transform;
+}
+
+.button .button-icon-inner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  width: 1.5rem;
+  height: 1.5rem;
+  background-color: var(--base-400);
+  color: var(--base-100);
+  border-radius: 10rem;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.button:hover .button-icon {
+  animation: flipTwice 0.8s ease-out forwards;
+}
+
+.button:not(:hover) .button-icon {
+  animation: flipBack 0.8s ease-out forwards;
+}
+
+@keyframes flipTwice {
+  0% {
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform: rotateY(720deg);
+  }
+}
+
+@keyframes flipBack {
+  0% {
+    transform: rotateY(720deg);
+  }
+  100% {
+    transform: rotateY(0deg);
+  }
+}
+
+.button--light {
+  color: var(--base-100);
+}
+
+.button--light .button-label {
+  color: var(--base-100);
+}
+
+.button--light::after {
+  background: var(--base-100);
+}
+
+.button--light .button-icon-inner {
+  background-color: var(--base-100);
+  color: var(--base-400);
+}
+
+@media (max-width: 1000px) {
+  .button::after {
+    display: none;
+  }
+
+  .button:hover .button-icon,
+  .button:not(:hover) .button-icon {
+    animation: none;
+  }
+}
+
+.button .line {
+  position: relative;
+  display: block;
+  transform: translateY(100%);
+  will-change: transform;
+  padding-bottom: 0;
+  margin-bottom: 0;
+  line-height: 1;
+}
+
+.button .button-label-inner > div,
+.button .button-label-inner > div > div {
+  display: block;
+  line-height: 1;
+}
+
+.button .button-icon-inner {
+  font-family: "Messina Sans Mono";
+}
+
+.button .button-icon-inner svg {
+  width: 10px;
+  height: 10px;
+}

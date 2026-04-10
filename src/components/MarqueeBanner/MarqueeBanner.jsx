@@ -1,5 +1,6 @@
 import "./MarqueeBanner.css";
 import { useRef } from "react";
+import { siteConfig } from "../../data";
 
 import TextReveal from "../TextReveal/TextReveal";
 
@@ -10,6 +11,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 const MarqueeBanner = () => {
+  const { marquee } = siteConfig;
   const marqueeBannerRef = useRef(null);
   const marquee1Ref = useRef(null);
   const marquee2Ref = useRef(null);
@@ -39,23 +41,23 @@ const MarqueeBanner = () => {
     <section className="marquee-banner" ref={marqueeBannerRef}>
       <div className="marquees">
         <div className="marquee-header marquee-header-1" ref={marquee1Ref}>
-          <h1>Turning ideas into scalable products</h1>
+          <h1>{marquee.headlinePrimary}</h1>
         </div>
         <div className="marquee-header marquee-header-2" ref={marquee2Ref}>
-          <h1>Designing intelligent digital experiences</h1>
+          <h1>{marquee.headlineSecondary}</h1>
         </div>
       </div>
       <div className="banner">
         <div className="banner-content">
           <TextReveal>
-            <h4>Crafting systems that feels alive</h4>
+            <h4>{marquee.bannerCopy}</h4>
           </TextReveal>
         </div>
         <div className="banner-img">
-          <img src="/marquee-banner/marquee_banner_01.png" alt="" />
+          <img src={marquee.bannerImage} alt="" />
         </div>
         <div className="banner-logo">
-          <h5>[ Appaji.exe ]</h5>
+          <h5>{marquee.bannerLogo}</h5>
         </div>
       </div>
     </section>

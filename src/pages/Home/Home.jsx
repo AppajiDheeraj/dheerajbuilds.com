@@ -181,11 +181,11 @@ const Home = ({ isPreloaderComplete = false }) => {
 
           <div className="hero-footer">
             <div className="hero-footer-left">
-              <p>Appaji Dheeraj designs and builds scalable, production-ready systems with a focus on clean architecture and thoughtful execution. From concept to deployment — structured, efficient, and purposeful.</p>
+              <p>{siteConfig.home.heroDescription}</p>
             </div>
             <div className="hero-footer-right">
-              <p className="primary sm">▸ INTERFACE ALCHEMY</p>
-              <p className="primary sm">▸ SCROLL SORCERY</p>
+              <p className="primary sm">▸ {siteConfig.home.heroHighlights[0]}</p>
+              <p className="primary sm">▸ {siteConfig.home.heroHighlights[1]}</p>
             </div>
           </div>
         </section>
@@ -194,11 +194,11 @@ const Home = ({ isPreloaderComplete = false }) => {
         <div className="container">
           <div className="about-copy">
             <TextReveal type="flicker">
-              <p>Design. Code. Create.</p>
+              <p>{siteConfig.home.introTagline}</p>
             </TextReveal>
             <TextReveal>
               <h3>
-                Creating experiences that go beyond the screen.
+                {siteConfig.home.introHeading}
               </h3>
             </TextReveal>
             <div className="about-icon">
@@ -208,7 +208,7 @@ const Home = ({ isPreloaderComplete = false }) => {
         </div>
         <div className="section-footer light">
           <TextReveal type="flicker">
-            <p>/ Core State /</p>
+            <p>{siteConfig.home.introStateLabel}</p>
           </TextReveal>
         </div>
       </section>

@@ -3,6 +3,7 @@ import "./About.css";
 
 import ContactForm from "../../components/ContactForm/ContactForm";
 import Footer from "../../components/Footer/Footer";
+import { siteConfig } from "../../data";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Matter from "matter-js";
@@ -11,33 +12,8 @@ import ReactLenis from "lenis/react";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const ABOUT_PARAGRAPHS = [
-  "Welcome to the corner of the internet where things get built, not just for the scroll, but for the story. This is not just a site. Its a working archive of experiments, learnings, and quiet flexes.",
-  "I am Appaji Dheeraj. I design with rhythm, build with care, and believe every detail deserves a reason to exist. From quick sketches to final deploy, everything here was made with intent and maybe a bit of caffeine. This space is built for motion, meaning, and messing around until it clicks.",
-];
-
-const KEYWORDS = new Set([
-  "corner",
-  "scroll",
-  "archive",
-  "learnings",
-  "rhythm",
-  "detail",
-  "deploy",
-  "caffeine",
-  "messing",
-]);
-
-const GALLERY_CARDS = [
-  { id: "X01-842", image: "/project/project-1.jpg" },
-  { id: "V9-372K", image: "/project/project-2.jpg" },
-  { id: "Z84-Q17", image: "/project/project-3.jpg" },
-  { id: "L56-904", image: "/project/project-4.jpg" },
-  { id: "A23-7P1", image: "/project/project-5.jpg" },
-  { id: "T98-462", image: "/reviews/review-1.jpg" },
-];
-
 const About = () => {
+  const aboutConfig = siteConfig.about;
   const animeSectionRef = useRef(null);
   const skillsSectionRef = useRef(null);
   const objectContainerRef = useRef(null);
@@ -45,17 +21,19 @@ const About = () => {
   const galleryCardRefs = useRef([]);
 
   const paragraphWords = useMemo(() => {
-    return ABOUT_PARAGRAPHS.map((paragraph) =>
+    const keywords = new Set(aboutConfig.spotlightKeywords);
+
+    return aboutConfig.spotlightParagraphs.map((paragraph) =>
       paragraph.split(/\s+/).map((word) => {
         const normalizedWord = word.toLowerCase().replace(/[.,!?;:"]/g, "");
         return {
           word,
           normalizedWord,
-          isKeyword: KEYWORDS.has(normalizedWord),
+          isKeyword: keywords.has(normalizedWord),
         };
       })
     );
-  }, []);
+  }, [aboutConfig.spotlightKeywords, aboutConfig.spotlightParagraphs]);
 
   useEffect(() => {
     const triggers = [];
@@ -386,10 +364,10 @@ const About = () => {
       <div className="page about">
         <section className="about-hero">
           <div className="about-hero-img">
-            <img src="/about/about-hero.jpg" alt="About hero" />
+            <img src={aboutConfig.heroImage} alt={aboutConfig.heroImageAlt} />
           </div>
           <div className="about-header">
-            <h2>The Alchemist Behind It</h2>
+            <h2>{aboutConfig.heroTitle}</h2>
           </div>
         </section>
 
@@ -407,8 +385,8 @@ const About = () => {
 
           <div className="about-spotlight-bottom-bar">
             <div className="about-bar-content">
-              <p className="primary sm">▸ Specs loaded</p>
-              <p className="primary sm">/ Readme.md</p>
+              <p className="primary sm">{aboutConfig.spotlightBottomBar[0]}</p>
+              <p className="primary sm">{aboutConfig.spotlightBottomBar[1]}</p>
             </div>
           </div>
 
@@ -438,53 +416,31 @@ const About = () => {
           <div className="container">
             <div className="about-skills-col">
               <div className="about-skills-copy-wrapper">
-                <p className="primary sm">▸ Proving gravity applies to divs too</p>
-                <h3>Things I know that make the web cooler</h3>
+                <p className="primary sm">{aboutConfig.skillsEyebrow}</p>
+                <h3>{aboutConfig.skillsTitle}</h3>
               </div>
             </div>
 
             <div className="about-skills-col skills-playground">
               <div ref={objectContainerRef} className="object-container">
-                <div className="object os-1"><p className="primary sm">HTML</p></div>
-                <div className="object os-2"><p className="primary sm">CSS</p></div>
-                <div className="object os-3"><p className="primary sm">JavaScript</p></div>
-                <div className="object os-1"><p className="primary sm">GSAP</p></div>
-                <div className="object os-2"><p className="primary sm">ScrollTrigger</p></div>
-                <div className="object os-3"><p className="primary sm">Lenis</p></div>
-                <div className="object os-1"><p className="primary sm">React</p></div>
-                <div className="object os-2"><p className="primary sm">Node.js</p></div>
-                <div className="object os-3"><p className="primary sm">WebGL</p></div>
-                <div className="object os-1"><p className="primary sm">Three.js</p></div>
-                <div className="object os-2"><p className="primary sm">Docker</p></div>
-                <div className="object os-3"><p className="primary sm">Kubernetes</p></div>
-                <div className="object os-1"><p className="primary sm">Grafana</p></div>
-                <div className="object os-2"><p className="primary sm">Figma</p></div>
-                <div className="object os-3"><p className="primary sm">Java</p></div>
-                <div className="object os-1"><p className="primary sm">Go</p></div>
-                <div className="object os-2"><p className="primary sm">C</p></div>
-                <div className="object os-3"><p className="primary sm">Next.js</p></div>
-                <div className="object os-1"><p className="primary sm">Prometheus</p></div>
+                {aboutConfig.skills.map((skill, index) => (
+                  <div key={skill} className={`object os-${(index % 3) + 1}`}>
+                    <p className="primary sm">{skill}</p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </section>
 
-        
-
         <section className="about-outro">
           <div className="about-outro-inner">
-            <h3>Scroll ends but ideas do not</h3>
-            <p>
-              This space is a running log of experiments, shipping notes, and
-              design instincts tested in the wild.
-            </p>
+            <h3>{aboutConfig.outroTitle}</h3>
+            <p>{aboutConfig.outroDescription}</p>
             <div className="about-outro-tags">
-              <span>Frontend</span>
-              <span>Motion</span>
-              <span>Product Thinking</span>
-              <span>Systems</span>
-              <span>UI Craft</span>
-              <span>Shipped Work</span>
+              {aboutConfig.outroTags.map((tag) => (
+                <span key={tag}>{tag}</span>
+              ))}
             </div>
           </div>
         </section>

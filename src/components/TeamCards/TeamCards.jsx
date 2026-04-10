@@ -1,6 +1,6 @@
 import "./TeamCards.css";
-import { teamMembers } from "./teamMembers";
 import { useRef } from "react";
+import { siteConfig } from "../../data";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -8,6 +8,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 export default function TeamCards() {
+  const { clubs } = siteConfig;
+  const teamMembers = clubs.members;
   const stickyRef = useRef(null);
   const headerRef = useRef(null);
   const cardsRef = useRef([]);
@@ -194,7 +196,7 @@ export default function TeamCards() {
     <>
       <section className="sticky team-desktop" ref={stickyRef}>
         <div className="sticky-header" ref={headerRef}>
-          <h1>Clubs</h1>
+          <h1>{clubs.title}</h1>
         </div>
         {teamMembers.map((m, idx) => (
           <div
@@ -223,7 +225,7 @@ export default function TeamCards() {
 
       <section className="team-mobile">
         <div className="mobile-header">
-          <h1>Clubs</h1>
+          <h1>{clubs.title}</h1>
         </div>
         {teamMembers.map((m) => (
           <div className="team-card" id={m.id} key={`m-${m.id}`}>

@@ -122,6 +122,16 @@
   color: #ece9df;
   border-bottom: 1px solid rgba(236, 233, 223, 0.5);
   padding-bottom: 0.25em;
+  text-decoration: none;
+  transition: border-color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+.fieldwork-card-link:hover,
+.fieldwork-card-link:focus-visible {
+  text-decoration: underline;
+  text-decoration-thickness: 0.08rem;
+  text-underline-offset: 0.3rem;
+  border-color: rgba(236, 233, 223, 0.92);
 }
 
 @media (max-width: 1000px) {

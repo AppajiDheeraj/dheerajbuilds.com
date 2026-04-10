@@ -1,28 +1,43 @@
 import "./App.css";
 import { Routes, Route, useLocation } from "react-router-dom";
-import { Suspense, lazy, useEffect, useRef, useState } from "react";
+import { Suspense, lazy, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { preloadAllRoutes, routeLoaders } from "./utils/routePreload";
+import FAQ from "./pages/FAQ/FAQ";
 
 import NavBar from "./components/NavBar/NavBar";
 import Preloader from "./components/Preloader/Preloader";
 
-const Home = lazy(() => import("./pages/Home/Home"));
-const Work = lazy(() => import("./pages/Work/Work"));
-const Project = lazy(() => import("./pages/Project/Project"));
-const About = lazy(() => import("./pages/About/About"));
-const FAQ = lazy(() => import("./pages/FAQ/FAQ"));
-const Contact = lazy(() => import("./pages/Contact/Contact"));
+const Home = lazy(routeLoaders["/"]);
+const Work = lazy(routeLoaders["/work"]);
+const Project = lazy(routeLoaders["/sample-project"]);
+const About = lazy(routeLoaders["/about"]);
+const Contact = lazy(routeLoaders["/contact"]);
 
 function ScrollToTop() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    // Delay to next frame avoids fighting in-progress route transition paints.
-    const id = requestAnimationFrame(() => {
-      window.scrollTo(0, 0);
-    });
+    const previousScrollRestoration = window.history.scrollRestoration;
+    window.history.scrollRestoration = "manual";
 
     return () => {
-      cancelAnimationFrame(id);
+      window.history.scrollRestoration = previousScrollRestoration;
+    };
+  }, []);
+
+  useLayoutEffect(() => {
+    const resetScrollToTop = () => {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    };
+
+    // Run immediately and on the next frame to beat smooth-scroll libraries and late paints.
+    resetScrollToTop();
+    const id = window.requestAnimationFrame(resetScrollToTop);
+
+    return () => {
+      window.cancelAnimationFrame(id);
     };
   }, [pathname]);
 
@@ -53,6 +68,34 @@ function App() {
       document.title = previousTitleRef.current;
     };
   }, []);
+
+  useEffect(() => {
+    if (!isPreloaderComplete) {
+      return;
+    }
+
+    let idleId;
+    let timeoutId;
+
+    const warmRoutes = () => {
+      preloadAllRoutes();
+    };
+
+    if ("requestIdleCallback" in window) {
+      idleId = window.requestIdleCallback(warmRoutes, { timeout: 1500 });
+    } else {
+      timeoutId = window.setTimeout(warmRoutes, 400);
+    }
+
+    return () => {
+      if (idleId) {
+        window.cancelIdleCallback(idleId);
+      }
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+      }
+    };
+  }, [isPreloaderComplete]);
 
   const handlePreloaderComplete = () => {
     setIsPreloaderComplete(true);

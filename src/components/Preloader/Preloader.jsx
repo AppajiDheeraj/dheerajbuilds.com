@@ -38,7 +38,7 @@ const Preloader = ({ onAnimationComplete }) => {
         gsap.set(logoSplit.chars, { x: "110%" });
         gsap.set(".preloader-logo h1", { opacity: 1 });
 
-        function animateProgress(duration = 4.9) {
+        function animateProgress(duration = 1.15) {
           const tl = gsap.timeline();
           // Keep progress timing centralized so visual pacing can be tuned in one place.
           tl.to(".preloader-progress-bar", {
@@ -54,13 +54,13 @@ const Preloader = ({ onAnimationComplete }) => {
         const maskScale = isMobile ? 25 : 15;
 
         const tl = gsap.timeline({
-          delay: 0.35,
+          delay: 0.1,
           onComplete: () => {
             setLoaderAnimating(false);
-            setTimeout(() => {
+            window.setTimeout(() => {
               setShowPreloader(false);
               if (onAnimationComplete) onAnimationComplete();
-            }, 100);
+            }, 60);
           },
         });
 
@@ -94,18 +94,14 @@ const Preloader = ({ onAnimationComplete }) => {
             ".preloader-mask",
             {
               scale: maskScale,
-              duration: 1.45,
+              duration: 0.7,
               ease: "expo.inOut",
             },
             "<"
           );
       };
 
-      if (document.fonts.status === "loaded") {
-        startAnimation();
-      } else {
-        document.fonts.ready.then(startAnimation);
-      }
+      startAnimation();
     },
     { scope: wrapperRef, dependencies: [showPreloader, onAnimationComplete] }
   );

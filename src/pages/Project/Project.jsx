@@ -8,6 +8,8 @@ import { siteConfig } from "../../data";
 import ReactLenis from "lenis/react";
 
 const Project = () => {
+  const projectConfig = siteConfig.projectPage;
+
   return (
     <ReactLenis root>
       <div className="page project">
@@ -17,165 +19,82 @@ const Project = () => {
             animateOnScroll={false}
             className="primary sm"
           >
-            Short film on self-discovery
+            {projectConfig.headerEyebrow}
           </RevealText>
           <RevealText tag="h2" delay={1}>
-            Fragments of Light
+            {projectConfig.headerTitle}
           </RevealText>
         </section>
 
         <section className="project-banner-img">
           <div className="project-banner-img-wrapper">
-            <ParallaxImage src="/project/banner.jpg" alt="" />
+            <ParallaxImage src={projectConfig.bannerImage} alt="" />
           </div>
         </section>
 
         <section className="project-details">
           <div className="details">
             <RevealText tag="p" animateOnScroll={true} className="primary sm">
-              Overview
+              {projectConfig.overviewLabel}
             </RevealText>
             <RevealText tag="h4" animateOnScroll={true}>
-              A visual meditation on identity, *Fragments of Light* explores the
-              quiet journey of self-discovery through minimalism, mood, and
-              motion.
+              {projectConfig.overviewCopy}
             </RevealText>
           </div>
 
-          <div className="details">
-            <RevealText tag="p" animateOnScroll={true} className="primary sm">
-              Year
-            </RevealText>
-            <RevealText tag="h4" animateOnScroll={true}>
-              2024
-            </RevealText>
-          </div>
-
-          <div className="details">
-            <RevealText tag="p" animateOnScroll={true} className="primary sm">
-              Category
-            </RevealText>
-            <RevealText tag="h4" animateOnScroll={true}>
-              Short Film
-            </RevealText>
-          </div>
-
-          <div className="details">
-            <RevealText tag="p" animateOnScroll={true} className="primary sm">
-              Running Time
-            </RevealText>
-            <RevealText tag="h4" animateOnScroll={true}>
-              6:30
-            </RevealText>
-          </div>
-
-          <div className="details">
-            <RevealText tag="p" animateOnScroll={true} className="primary sm">
-              Directed by
-            </RevealText>
-            <RevealText tag="h4" animateOnScroll={true}>
-              {siteConfig.person.fullName}
-            </RevealText>
-          </div>
+          {projectConfig.meta.map((item) => (
+            <div className="details" key={item.label}>
+              <RevealText tag="p" animateOnScroll={true} className="primary sm">
+                {item.label}
+              </RevealText>
+              <RevealText tag="h4" animateOnScroll={true}>
+                {item.value}
+              </RevealText>
+            </div>
+          ))}
         </section>
 
         <section className="project-images">
           <div className="project-images-container">
-            <div className="project-img">
-              <div className="project-img-wrapper">
-                <ParallaxImage src="/project/project-1.jpg" alt="" />
+            {projectConfig.images.map((image, index) => (
+              <div className="project-img" key={`${image}-${index}`}>
+                <div className="project-img-wrapper">
+                  <ParallaxImage src={image} alt="" />
+                </div>
               </div>
-            </div>
-
-            <div className="project-img">
-              <div className="project-img-wrapper">
-                <ParallaxImage src="/project/project-2.jpg" alt="" />
-              </div>
-            </div>
-
-            <div className="project-img">
-              <div className="project-img-wrapper">
-                <ParallaxImage src="/project/project-3.jpg" alt="" />
-              </div>
-            </div>
-
-            <div className="project-img">
-              <div className="project-img-wrapper">
-                <ParallaxImage src="/project/project-4.jpg" alt="" />
-              </div>
-            </div>
-
-            <div className="project-img">
-              <div className="project-img-wrapper">
-                <ParallaxImage src="/project/project-5.jpg" alt="" />
-              </div>
-            </div>
+            ))}
           </div>
         </section>
 
         <section className="project-details">
-          <div className="details">
-            <RevealText tag="p" animateOnScroll={true} className="primary sm">
-              Editor
-            </RevealText>
-            <RevealText tag="h4" animateOnScroll={true}>
-              {siteConfig.person.fullName}
-            </RevealText>
-          </div>
-
-          <div className="details">
-            <RevealText tag="p" animateOnScroll={true} className="primary sm">
-              Sound Design
-            </RevealText>
-            <RevealText tag="h4" animateOnScroll={true}>
-              Elena Brooks
-            </RevealText>
-          </div>
-
-          <div className="details">
-            <RevealText tag="p" animateOnScroll={true} className="primary sm">
-              Art Director
-            </RevealText>
-            <RevealText tag="h4" animateOnScroll={true}>
-              Milo Vance
-            </RevealText>
-          </div>
-
-          <div className="details">
-            <RevealText tag="p" animateOnScroll={true} className="primary sm">
-              Producer
-            </RevealText>
-            <RevealText tag="h4" animateOnScroll={true}>
-              Asha Lennox
-            </RevealText>
-          </div>
-
-          <div className="details">
-            <RevealText tag="p" animateOnScroll={true} className="primary sm">
-              Director
-            </RevealText>
-            <RevealText tag="h4" animateOnScroll={true}>
-              {siteConfig.person.fullName}
-            </RevealText>
-          </div>
+          {projectConfig.credits.map((credit) => (
+            <div className="details" key={credit.label}>
+              <RevealText tag="p" animateOnScroll={true} className="primary sm">
+                {credit.label}
+              </RevealText>
+              <RevealText tag="h4" animateOnScroll={true}>
+                {credit.value}
+              </RevealText>
+            </div>
+          ))}
         </section>
 
         <section className="next-project">
           <RevealText tag="p" animateOnScroll={true} className="primary sm">
-            02 - 05
+            {projectConfig.next.index}
           </RevealText>
           <RevealText tag="h3" animateOnScroll={true}>
-            Next
+            {projectConfig.next.label}
           </RevealText>
 
           <div className="next-project-img">
             <div className="next-project-img-wrapper">
-              <ParallaxImage src="/work/work-2.jpg" alt="" />
+              <ParallaxImage src={projectConfig.next.image} alt="" />
             </div>
           </div>
 
           <RevealText tag="h4" animateOnScroll={true}>
-            Market Pulse
+            {projectConfig.next.title}
           </RevealText>
         </section>
       </div>

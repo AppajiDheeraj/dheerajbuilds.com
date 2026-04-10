@@ -1,7 +1,7 @@
 .page.work {
   width: 100%;
-  height: 100svh;
-  overflow: hidden;
+  min-height: 100svh;
+  overflow: clip;
   background: #060706;
 }
 

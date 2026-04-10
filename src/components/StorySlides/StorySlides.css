@@ -1,0 +1,313 @@
+.stories {
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  box-sizing: border-box;
+  padding-top: 6.9rem;
+  overflow: hidden;
+  background: #060706;
+}
+
+.stories h1 {
+  color: #f3efe6;
+  text-transform: none;
+  font-family: "Rader";
+  font-size: clamp(2rem, 2.35vw, 2.8rem);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: 0;
+  text-shadow: 0 1px 16px rgba(0, 0, 0, 0.55);
+}
+
+.stories p {
+  color: rgba(243, 239, 230, 0.76);
+  font-family: "Messina Sans";
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: 0;
+}
+
+.stories a {
+  color: #f3efe6;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-family: "Messina Sans Mono";
+  font-size: 0.9rem;
+  font-weight: 600;
+  -webkit-font-smoothing: antialiased;
+}
+
+.stories .story-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  opacity: 0.78;
+}
+
+.stories .story-img::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(6, 7, 6, 0.24) 0%, rgba(6, 7, 6, 0.68) 100%),
+    linear-gradient(90deg, rgba(6, 7, 6, 0.36) 0%, rgba(6, 7, 6, 0.12) 45%, rgba(6, 7, 6, 0.36) 100%);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.stories .img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  transform-origin: center center;
+  will-change: transform, opacity, clip-path;
+}
+
+.stories .img--current {
+  z-index: 2;
+}
+
+.stories .img--previous {
+  z-index: 1;
+}
+
+.stories .img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  will-change: transform, opacity;
+}
+
+.stories .story-content {
+  position: absolute;
+  inset: 0 auto 0 50%;
+  transform: translateX(-50%);
+  width: min(44rem, 100%);
+  height: 100%;
+  padding: 7.15rem clamp(1.5rem, 4vw, 2.75rem) 5.35rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: clamp(2rem, 5vh, 4rem);
+  z-index: 4;
+}
+
+.stories .row {
+  width: 100%;
+}
+
+.stories .row--content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  margin-top: auto;
+  max-width: 31rem;
+}
+
+.stories .indices {
+  width: 100%;
+  height: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.25em;
+}
+
+.stories .index {
+  position: relative;
+  width: 100%;
+  height: 0.25rem;
+  border-radius: 2rem;
+  background: rgba(243, 239, 230, 0.32);
+  overflow: hidden;
+}
+
+.stories .index-highlight {
+  position: absolute;
+  inset: 0;
+  background: #f3efe6;
+  transform: scaleX(0);
+  transform-origin: left center;
+  will-change: transform;
+}
+
+.stories .index.is-active .index-highlight {
+  animation-name: story-progress-fill;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+.stories .profile {
+  width: 100%;
+  min-height: 60px;
+  display: flex;
+  gap: 1em;
+  align-items: center;
+}
+
+.stories .profile-icon {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 100%;
+  overflow: hidden;
+  background: rgba(243, 239, 230, 0.12);
+  border: 1px solid rgba(243, 239, 230, 0.16);
+  color: #f3efe6;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.stories .profile-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.stories .profile-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.stories .profile-name {
+  position: relative;
+  width: min(16rem, 100%);
+  min-height: 1.2rem;
+  overflow: hidden;
+}
+
+.stories .title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.stories .title-row {
+  position: relative;
+  width: 100%;
+  min-height: 3.2rem;
+  overflow: hidden;
+}
+
+.stories .title-row h1 {
+  font-family: "Rader";
+  font-weight: 600;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+.stories .story-description {
+  position: relative;
+  max-width: 29rem;
+  min-height: 6rem;
+  overflow: hidden;
+}
+
+.stories .story-description p {
+  font-size: 0.98rem;
+  line-height: 1.55;
+  opacity: 0.82;
+  text-transform: none;
+  max-width: 42ch;
+}
+
+.stories .link {
+  position: relative;
+  width: max-content;
+  margin: 0;
+  min-height: 2rem;
+  padding: 0.35rem 0 0.2rem;
+}
+
+.stories .stories-footer {
+  position: absolute;
+  bottom: 1.85rem;
+  left: 0;
+  width: 100%;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.stories .stories-footer .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 clamp(1.5rem, 4vw, 2.75rem);
+}
+
+.stories .stories-footer p {
+  text-transform: uppercase;
+  font-family: "Messina Sans Mono";
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1.15;
+  color: rgba(243, 239, 230, 0.82);
+  letter-spacing: 0.1rem;
+}
+
+@keyframes story-progress-fill {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (max-width: 1000px) {
+  .stories {
+    min-height: 100svh;
+    padding-top: 5.8rem;
+  }
+
+  .stories .story-content {
+    width: 100%;
+    padding: 5.8rem 1.25rem 5.4rem 1.25rem;
+    gap: 1.75rem;
+  }
+
+  .stories .indices {
+    margin-top: 0;
+  }
+
+  .stories h1 {
+    font-size: clamp(1.55rem, 6vw, 2rem);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: 0;
+  }
+
+  .stories .title-row {
+    min-height: 2.4rem;
+  }
+
+  .stories .story-description {
+    max-width: 100%;
+    min-height: 6.8rem;
+  }
+
+  .stories .story-description p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    max-width: 100%;
+  }
+
+  .stories .link {
+    padding-bottom: 0.35rem;
+  }
+
+  .stories .stories-footer {
+    bottom: 1.1rem;
+  }
+
+  .stories .stories-footer .container {
+    padding: 0 1.25rem;
+  }
+}
