@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import "./About.css";
 
 import ContactForm from "../../components/ContactForm/ContactForm";
@@ -6,19 +6,199 @@ import Footer from "../../components/Footer/Footer";
 import { siteConfig } from "../../data";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Matter from "matter-js";
+import { Flip } from "gsap/flip";
+import { Bolt, Grid2x2, NotebookTabs } from "lucide-react";
 
 import ReactLenis from "lenis/react";
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, Flip);
+
+const deskItems = [
+  {
+    id: "music",
+    src: "/about/desk/music.png",
+    alt: "Music card",
+    loading: "eager",
+    decoding: "sync",
+    fetchPriority: "high",
+  },
+  {
+    id: "appicon",
+    src: "/about/desk/appicon.png",
+    alt: "App icon",
+    loading: "lazy",
+    decoding: "async",
+    fetchPriority: "auto",
+  },
+  {
+    id: "cd",
+    src: "/about/desk/cd.png",
+    alt: "CD artwork",
+    loading: "lazy",
+    decoding: "async",
+    fetchPriority: "auto",
+  },
+  {
+    id: "cursor",
+    src: "/about/desk/cursor.png",
+    alt: "Cursor graphic",
+    loading: "lazy",
+    decoding: "async",
+    fetchPriority: "auto",
+  },
+  {
+    id: "dialog",
+    src: "/about/desk/dialog.png",
+    alt: "Dialog window",
+    loading: "lazy",
+    decoding: "async",
+    fetchPriority: "auto",
+  },
+  {
+    id: "folder",
+    src: "/about/desk/folder.png",
+    alt: "Folder graphic",
+    loading: "lazy",
+    decoding: "async",
+    fetchPriority: "auto",
+  },
+  {
+    id: "plant",
+    src: "/about/desk/plant.png",
+    alt: "Plant illustration",
+    loading: "lazy",
+    decoding: "async",
+    fetchPriority: "auto",
+  },
+  {
+    id: "email",
+    src: "/about/desk/email.png",
+    alt: "email note",
+    loading: "lazy",
+    decoding: "async",
+    fetchPriority: "auto",
+  },
+  {
+    id: "painting",
+    src: "/about/desk/painting.png",
+    alt: "painting graphic",
+    loading: "lazy",
+    decoding: "async",
+    fetchPriority: "auto",
+  },
+  {
+    id: "coffee",
+    src: "/about/desk/coffee.png",
+    alt: "coffee",
+    loading: "eager",
+    decoding: "sync",
+    fetchPriority: "high",
+  },
+];
+
+const deskItemSizes = {
+  music: 325,
+  appicon: 100,
+  cd: 320,
+  cursor: 125,
+  dialog: { width: 270, height: 170 },
+  folder: 150,
+  plant: 275,
+  email: 305,
+  painting: 220,
+  coffee: 345,
+};
+
+const deskLayouts = {
+  chaos: {
+    header: { x: 50, y: 47.5, center: true },
+    items: [
+      { id: "music", x: -2.5, y: -2.5, rotation: -15 },
+      { id: "appicon", x: 20, y: 15, rotation: 5 },
+      { id: "cd", x: 72.5, y: 5, rotation: 0 },
+      { id: "cursor", x: 72.5, y: 75, rotation: 0 },
+      { id: "dialog", x: 80, y: 60, rotation: 15 },
+      { id: "folder", x: 90, y: 50, rotation: 5 },
+      { id: "plant", x: 9.5, y: 65, rotation: 15 },
+      { id: "email", x: 5, y: 25, rotation: 10 },
+      { id: "painting", x: -2.5, y: 65, rotation: -25 },
+      { id: "coffee", x: 65, y: 20, rotation: -5 },
+    ],
+  },
+  cleanup: {
+    header: { x: 70, y: 37.5, center: false },
+    items: [
+      { id: "music", x: 76.5, y: -5, rotation: 0 },
+      { id: "appicon", x: 64.5, y: 6, rotation: 0 },
+      { id: "cd", x: 0, y: 47.5, rotation: 0 },
+      { id: "cursor", x: 63.5, y: 23, rotation: 0 },
+      { id: "dialog", x: 70.5, y: 77, rotation: 0 },
+      { id: "folder", x: 24.5, y: 33, rotation: 0 },
+      { id: "plant", x: 21.5, y: 61, rotation: 0 },
+      { id: "email", x: 2, y: -3.5, rotation: 0 },
+      { id: "painting", x: 40, y: 60.5, rotation: 0 },
+      { id: "coffee", x: 36.5, y: 5.5, rotation: 0 },
+    ],
+  },
+  notebook: {
+    header: { x: 50, y: 47.5, center: true },
+    items: [
+      { id: "music", x: 50, y: -2, rotation: -8 },
+      { id: "coffee", x: 67, y: 17, rotation: -6 },
+      { id: "cursor", x: 37, y: 7, rotation: 0 },
+      { id: "dialog", x: 76, y: 56, rotation: 8 },
+      { id: "plant", x: 62, y: 73, rotation: 12 },
+      { id: "appicon", x: 50, y: 75, rotation: 16 },
+      { id: "email", x: 28, y: 73, rotation: -16 },
+      { id: "folder", x: 14, y: 56, rotation: -10 },
+      { id: "cd", x: 14, y: 34, rotation: 4 },
+      { id: "painting", x: 25, y: 7, rotation: 17 },
+    ],
+  },
+};
+
+const deskModes = [
+  { id: "chaos", label: "Creative spread", icon: Bolt },
+  { id: "cleanup", label: "Structured view", icon: Grid2x2 },
+  { id: "notebook", label: "Notebook mode", icon: NotebookTabs },
+];
 
 const About = () => {
   const aboutConfig = siteConfig.about;
   const animeSectionRef = useRef(null);
-  const skillsSectionRef = useRef(null);
-  const objectContainerRef = useRef(null);
-  const stickyCardsSectionRef = useRef(null);
-  const galleryCardRefs = useRef([]);
+  const deskSectionRef = useRef(null);
+  const deskFrameRef = useRef(null);
+  const deskHeaderRef = useRef(null);
+  const deskItemRefs = useRef({});
+  const activeDeskModeRef = useRef("chaos");
+  const [activeDeskMode, setActiveDeskMode] = useState("chaos");
+  const [isMobileViewport, setIsMobileViewport] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+
+    return window.matchMedia("(max-width: 1000px)").matches;
+  });
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return undefined;
+    }
+
+    const mediaQuery = window.matchMedia("(max-width: 1000px)");
+
+    const handleViewportChange = (event) => {
+      setIsMobileViewport(event.matches);
+    };
+
+    setIsMobileViewport(mediaQuery.matches);
+
+    mediaQuery.addEventListener("change", handleViewportChange);
+
+    return () => {
+      mediaQuery.removeEventListener("change", handleViewportChange);
+    };
+  }, []);
 
   const paragraphWords = useMemo(() => {
     const keywords = new Set(aboutConfig.spotlightKeywords);
@@ -35,143 +215,17 @@ const About = () => {
     );
   }, [aboutConfig.spotlightKeywords, aboutConfig.spotlightParagraphs]);
 
+  const setDeskItemRef = (id) => (node) => {
+    if (node) {
+      deskItemRefs.current[id] = node;
+      return;
+    }
+
+    delete deskItemRefs.current[id];
+  };
+
   useEffect(() => {
     const triggers = [];
-    const intervals = [];
-    const timers = [];
-    let rafId = null;
-    let engine = null;
-    let runner = null;
-    let physicsStarted = false;
-    let bodyBindings = [];
-
-    const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
-
-    const initPhysics = () => {
-      if (physicsStarted || !objectContainerRef.current) return;
-      physicsStarted = true;
-
-      const container = objectContainerRef.current;
-      const containerRect = container.getBoundingClientRect();
-      const wallThickness = 200;
-      const floorOffset = 8;
-
-      engine = Matter.Engine.create();
-      engine.gravity = { x: 0, y: 1 };
-      engine.constraintIterations = 15;
-      engine.positionIterations = 25;
-      engine.velocityIterations = 20;
-
-      const walls = [
-        Matter.Bodies.rectangle(
-          containerRect.width / 2,
-          containerRect.height - floorOffset + wallThickness / 2,
-          containerRect.width + wallThickness * 2,
-          wallThickness,
-          { isStatic: true }
-        ),
-        Matter.Bodies.rectangle(
-          -wallThickness / 2,
-          containerRect.height / 2,
-          wallThickness,
-          containerRect.height + wallThickness * 2,
-          { isStatic: true }
-        ),
-        Matter.Bodies.rectangle(
-          containerRect.width + wallThickness / 2,
-          containerRect.height / 2,
-          wallThickness,
-          containerRect.height + wallThickness * 2,
-          { isStatic: true }
-        ),
-      ];
-
-      Matter.World.add(engine.world, walls);
-
-      const objects = Array.from(container.querySelectorAll(".object"));
-
-      bodyBindings = objects.map((obj, index) => {
-        const objRect = obj.getBoundingClientRect();
-        const startX =
-          Math.random() * (containerRect.width - objRect.width) +
-          objRect.width / 2;
-        const startY = -500 - index * 200;
-
-        const body = Matter.Bodies.rectangle(
-          startX,
-          startY,
-          objRect.width,
-          objRect.height,
-          {
-            restitution: 0.5,
-            friction: 0.15,
-            frictionAir: 0.02,
-            density: 0.002,
-            chamfer: { radius: 10 },
-          }
-        );
-
-        Matter.Body.setAngle(body, (Math.random() - 0.5) * Math.PI);
-        Matter.World.add(engine.world, body);
-
-        return {
-          body,
-          element: obj,
-          width: objRect.width,
-          height: objRect.height,
-        };
-      });
-
-      timers.push(
-        setTimeout(() => {
-          if (!engine) return;
-          const topWall = Matter.Bodies.rectangle(
-            containerRect.width / 2,
-            -wallThickness / 2,
-            containerRect.width + wallThickness * 2,
-            wallThickness,
-            { isStatic: true }
-          );
-          Matter.World.add(engine.world, topWall);
-        }, 3000)
-      );
-
-      intervals.push(
-        setInterval(() => {
-          if (!bodyBindings.length) return;
-          if (Math.random() < 0.3) {
-            const randomBody =
-              bodyBindings[Math.floor(Math.random() * bodyBindings.length)].body;
-            Matter.Body.applyForce(randomBody, randomBody.position, {
-              x: (Math.random() - 0.5) * 0.02,
-              y: (Math.random() - 0.5) * 0.01,
-            });
-          }
-        }, 2000)
-      );
-
-      runner = Matter.Runner.create();
-      Matter.Runner.run(runner, engine);
-
-      const updatePositions = () => {
-        bodyBindings.forEach(({ body, element, width, height }) => {
-          const x = clamp(body.position.x - width / 2, 0, containerRect.width - width);
-          const y = clamp(
-            body.position.y - height / 2,
-            -height * 3,
-            containerRect.height - height - floorOffset
-          );
-
-          element.style.left = `${x}px`;
-          element.style.top = `${y}px`;
-          element.style.transform = `rotate(${body.angle}rad)`;
-        });
-
-        rafId = requestAnimationFrame(updatePositions);
-      };
-
-      updatePositions();
-    };
 
     if (animeSectionRef.current) {
       const words = Array.from(
@@ -268,106 +322,206 @@ const About = () => {
       );
     }
 
-    if (skillsSectionRef.current) {
-      triggers.push(
-        ScrollTrigger.create({
-          trigger: skillsSectionRef.current,
-          start: "top top",
-          end: `+=${window.innerHeight * 3}px`,
-          pin: true,
-          pinSpacing: true,
-          scrub: 1,
-        })
-      );
-
-      triggers.push(
-        ScrollTrigger.create({
-          trigger: skillsSectionRef.current,
-          start: "top bottom",
-          once: true,
-          onEnter: initPhysics,
-        })
-      );
-    }
-
-    if (stickyCardsSectionRef.current) {
-      const galleryCards = galleryCardRefs.current.filter(Boolean);
-      const rotations = [-12, 10, -5, 5, -5, -2];
-
-      galleryCards.forEach((galleryCard, index) => {
-        gsap.set(galleryCard, {
-          y: window.innerHeight,
-          rotate: rotations[index] ?? 0,
-        });
-      });
-
-      triggers.push(
-        ScrollTrigger.create({
-          trigger: stickyCardsSectionRef.current,
-          start: "top top",
-          end: `+=${window.innerHeight * 8}px`,
-          pin: true,
-          pinSpacing: true,
-          scrub: 1,
-          onUpdate: (self) => {
-            const progress = self.progress;
-            const totalCards = galleryCards.length || 1;
-            const progressPerCard = 1 / totalCards;
-
-            galleryCards.forEach((galleryCard, index) => {
-              const galleryCardStart = index * progressPerCard;
-              let galleryCardProgress = (progress - galleryCardStart) / progressPerCard;
-              galleryCardProgress = Math.min(Math.max(galleryCardProgress, 0), 1);
-
-              let yPos = window.innerHeight * (1 - galleryCardProgress);
-              let xPos = 0;
-
-              if (galleryCardProgress === 1 && index < totalCards - 1) {
-                const remainingProgress =
-                  (progress - (galleryCardStart + progressPerCard)) /
-                  (1 - (galleryCardStart + progressPerCard));
-
-                if (remainingProgress > 0) {
-                  const distanceMultiplier = 1 - index * 0.15;
-                  xPos = -window.innerWidth * 0.3 * distanceMultiplier * remainingProgress;
-                  yPos = -window.innerHeight * 0.3 * distanceMultiplier * remainingProgress;
-                }
-              }
-
-              gsap.set(galleryCard, {
-                y: yPos,
-                x: xPos,
-              });
-            });
-          },
-        })
-      );
-    }
-
     return () => {
-      if (rafId) cancelAnimationFrame(rafId);
-
-      intervals.forEach((intervalId) => clearInterval(intervalId));
-      timers.forEach((timerId) => clearTimeout(timerId));
       triggers.forEach((trigger) => trigger.kill());
-
-      if (runner) Matter.Runner.stop(runner);
-      if (engine) {
-        Matter.World.clear(engine.world, false);
-        Matter.Engine.clear(engine);
-      }
     };
   }, []);
+
+  useEffect(() => {
+    const desk = deskSectionRef.current;
+    const frame = deskFrameRef.current;
+    const header = deskHeaderRef.current;
+    const items = deskItems
+      .map((item) => deskItemRefs.current[item.id])
+      .filter(Boolean);
+
+    if (!desk || !frame || !header || (!isMobileViewport && !items.length)) {
+      return undefined;
+    }
+
+    const setLayout = (mode) => {
+      const deskWidth = frame.clientWidth;
+      const deskHeight = frame.clientHeight;
+
+      if (isMobileViewport) {
+        const headerX = deskWidth * 0.5 - header.offsetWidth / 2;
+        const headerY = deskHeight * 0.43 - header.offsetHeight / 2;
+
+        gsap.set(header, {
+          x: headerX,
+          y: headerY,
+          rotation: 0,
+        });
+
+        return;
+      }
+
+      const layout = deskLayouts[mode];
+      const paddingX = 36;
+      const paddingY = 36;
+      const safeWidth = Math.max(0, deskWidth - paddingX * 2);
+      const safeHeight = Math.max(0, deskHeight - paddingY * 2);
+
+      const clampPosition = (value, min, max) => Math.max(min, Math.min(max, value));
+
+      const offsetX = layout.header.center ? header.offsetWidth / 2 : 0;
+      const offsetY = layout.header.center ? header.offsetHeight / 2 : 0;
+      const headerX = layout.header.x;
+      const headerY = layout.header.y;
+      const headerWidth = header.offsetWidth;
+      const headerHeight = header.offsetHeight;
+      const headerMaxX = Math.max(paddingX, deskWidth - paddingX - headerWidth);
+      const headerMaxY = Math.max(paddingY, deskHeight - paddingY - headerHeight);
+      const headerXPosition = clampPosition(
+        paddingX + (headerX / 100) * safeWidth - offsetX,
+        paddingX,
+        headerMaxX
+      );
+      const headerYPosition = clampPosition(
+        paddingY + (headerY / 100) * safeHeight - offsetY,
+        paddingY,
+        headerMaxY
+      );
+
+      gsap.set(header, {
+        x: headerXPosition,
+        y: headerYPosition,
+        rotation: 0,
+      });
+
+      layout.items.forEach(({ id, x, y, rotation }) => {
+        const element = deskItemRefs.current[id];
+        if (!element) {
+          return;
+        }
+
+        const itemSize = deskItemSizes[id];
+        const width = typeof itemSize === "object" ? itemSize.width : itemSize;
+        const height = typeof itemSize === "object" ? itemSize.height : itemSize;
+        const modeScale = mode === "notebook" ? 0.88 : 1;
+        const itemWidth = width * modeScale;
+        const itemHeight = height * modeScale;
+
+        const maxX = Math.max(paddingX, deskWidth - paddingX - itemWidth);
+        const maxY = Math.max(paddingY, deskHeight - paddingY - itemHeight);
+        const itemXPosition = clampPosition(
+          paddingX + (x / 100) * safeWidth,
+          paddingX,
+          maxX
+        );
+
+        const itemYPosition = clampPosition(
+          paddingY + (y / 100) * safeHeight,
+          paddingY,
+          maxY
+        );
+
+        gsap.set(element, {
+          x: itemXPosition,
+          y: itemYPosition,
+          width: itemWidth,
+          height: itemHeight,
+          rotation,
+          zIndex: "",
+        });
+      });
+    };
+
+    const flipTargets = [header, ...items];
+    const shouldAnimate = activeDeskModeRef.current !== activeDeskMode;
+
+    if (shouldAnimate) {
+      const state = Flip.getState(flipTargets);
+      setLayout(activeDeskMode);
+
+      Flip.from(state, {
+        duration: 1.2,
+        ease: "power3.inOut",
+        stagger: { amount: 0.1, from: "center" },
+        absolute: true,
+      });
+    } else {
+      setLayout(activeDeskMode);
+    }
+
+    activeDeskModeRef.current = activeDeskMode;
+
+    const handleResize = () => {
+      setLayout(activeDeskModeRef.current);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [activeDeskMode, isMobileViewport]);
 
   return (
     <ReactLenis root>
       <div className="page about">
-        <section className="about-hero">
-          <div className="about-hero-img">
-            <img src={aboutConfig.heroImage} alt={aboutConfig.heroImageAlt} />
-          </div>
-          <div className="about-header">
-            <h2>{aboutConfig.heroTitle}</h2>
+        <section ref={deskSectionRef} className="about-desk about-desk--hero">
+          <div
+            ref={deskFrameRef}
+            className={`about-desk-frame ${
+              isMobileViewport
+                ? "about-desk-frame--mobile-text"
+                : `about-desk-frame--${activeDeskMode}`
+            }`}
+          >
+            <div ref={deskHeaderRef} className="about-desk-header">
+              <p className="primary sm">{aboutConfig.deskLabel}</p>
+              <h2>{aboutConfig.deskHeadline}</h2>
+              <p>{aboutConfig.deskBody}</p>
+            </div>
+
+            {!isMobileViewport &&
+              deskItems.map((item) => {
+              const size = deskItemSizes[item.id];
+              const width = typeof size === "object" ? size.width : size;
+              const height = typeof size === "object" ? size.height : size;
+
+              return (
+                <div
+                  key={item.id}
+                  ref={setDeskItemRef(item.id)}
+                  className={`desk-item desk-item--${item.id}`}
+                >
+                  <img
+                    src={item.src}
+                    alt={item.alt}
+                    width={width}
+                    height={height}
+                    loading={item.loading}
+                    decoding={item.decoding}
+                    fetchPriority={item.fetchPriority}
+                    draggable={false}
+                  />
+                </div>
+              );
+            })}
+
+            {!isMobileViewport && (
+              <div className="about-desk-modes" aria-label="Desk layouts">
+                {deskModes.map((mode) => {
+                  const Icon = mode.icon;
+
+                  return (
+                    <button
+                      key={mode.id}
+                      type="button"
+                      className={activeDeskMode === mode.id ? "active" : ""}
+                      onClick={() => setActiveDeskMode(mode.id)}
+                      aria-pressed={activeDeskMode === mode.id}
+                      aria-label={mode.label}
+                      title={mode.label}
+                    >
+                      <Icon size={18} strokeWidth={2} />
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </section>
 
@@ -411,28 +565,6 @@ const About = () => {
             </div>
           </div>
         </section>
-
-        <section ref={skillsSectionRef} className="about-skills">
-          <div className="container">
-            <div className="about-skills-col">
-              <div className="about-skills-copy-wrapper">
-                <p className="primary sm">{aboutConfig.skillsEyebrow}</p>
-                <h3>{aboutConfig.skillsTitle}</h3>
-              </div>
-            </div>
-
-            <div className="about-skills-col skills-playground">
-              <div ref={objectContainerRef} className="object-container">
-                {aboutConfig.skills.map((skill, index) => (
-                  <div key={skill} className={`object os-${(index % 3) + 1}`}>
-                    <p className="primary sm">{skill}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
         <section className="about-outro">
           <div className="about-outro-inner">
             <h3>{aboutConfig.outroTitle}</h3>

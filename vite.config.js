@@ -8,6 +8,13 @@ const apiProxyTarget =
 export default defineConfig({
   plugins: [react()],
   server: {
+    host: true,
+    port: 3000,
+    allowedHosts: [
+      "appajis-mac-mini.tail450ebf.ts.net",
+      "appaji-asus.tail450ebf.ts.net",
+      "oneplus-nord-4.tail450ebf.ts.net"
+    ],
     proxy: {
       "/api": {
         target: apiProxyTarget,
