@@ -25,7 +25,6 @@ dist-ssr
 *.sln
 *.sw?
 
-/.github
 /build
 /references
 .vercel

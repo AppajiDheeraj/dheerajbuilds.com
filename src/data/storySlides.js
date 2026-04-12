@@ -29,7 +29,7 @@ const storySlides = [
       "A concurrent file downloader built with HTTP range requests to improve transfer speed, resilience, and control when handling larger downloads.",
     linkLabel: "View on GitHub",
     linkSrc: "https://github.com/AppajiDheeraj/GoFetch",
-    storyImg: "/project/gofetch.svg",
+    storyImg: "/project/gofetch.png",
   },
 ];
 

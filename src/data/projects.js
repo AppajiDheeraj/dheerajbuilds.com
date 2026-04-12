@@ -28,7 +28,7 @@ const projects = [
     title: "GoFetch",
     description:
       "A concurrent file downloader built around HTTP range requests for faster, more reliable file transfers and better control over download performance.",
-    image: "/project/gofetch.svg",
+    image: "/project/gofetch.png",
     githubUrl: "https://github.com/AppajiDheeraj/GoFetch",
   },
 ];

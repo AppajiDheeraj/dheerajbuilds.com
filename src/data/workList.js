@@ -21,7 +21,7 @@ const workList = [
     id: 4,
     title: "GoFetch",
     category: "Systems",
-    image: "/project/gofetch.svg",
+    image: "/project/gofetch.png",
   },
 ];
 

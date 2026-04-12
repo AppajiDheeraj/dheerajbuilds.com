@@ -1,0 +1,6 @@
+# Code ownership for repository
+# This file specifies who should review pull requests that modify specific parts of the codebase
+
+* @AppajiDheeraj
+/src/components/ @AppajiDheeraj
+/src/pages/ @AppajiDheeraj
