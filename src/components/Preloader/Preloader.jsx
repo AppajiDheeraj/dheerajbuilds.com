@@ -7,11 +7,47 @@ import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(SplitText);
 
-const Preloader = ({ onAnimationComplete }) => {
+const Preloader = ({ onAnimationComplete, readyToExit = false }) => {
   const [showPreloader, setShowPreloader] = useState(true);
   const [loaderAnimating, setLoaderAnimating] = useState(true);
+  const [canStartExitAnimation, setCanStartExitAnimation] = useState(false);
   const wrapperRef = useRef(null);
+  const hasCompletedRef = useRef(false);
   const lenis = useLenis();
+
+  useEffect(() => {
+    if (readyToExit) {
+      setCanStartExitAnimation(true);
+    }
+  }, [readyToExit]);
+
+  useEffect(() => {
+    if (canStartExitAnimation) {
+      return undefined;
+    }
+
+    // Prevent the intro from hanging forever if any preload request stalls.
+    const fallbackId = window.setTimeout(() => {
+      setCanStartExitAnimation(true);
+    }, 7000);
+
+    return () => {
+      window.clearTimeout(fallbackId);
+    };
+  }, [canStartExitAnimation]);
+
+  const completePreloader = () => {
+    if (hasCompletedRef.current) {
+      return;
+    }
+
+    hasCompletedRef.current = true;
+    setLoaderAnimating(false);
+    window.setTimeout(() => {
+      setShowPreloader(false);
+      if (onAnimationComplete) onAnimationComplete();
+    }, 60);
+  };
 
   useEffect(() => {
     // Lock both Lenis and native scroll so users cannot bypass the intro state.
@@ -26,10 +62,12 @@ const Preloader = ({ onAnimationComplete }) => {
 
   useGSAP(
     () => {
-      if (!showPreloader) return;
+      if (!showPreloader || !canStartExitAnimation) return;
 
-      const startAnimation = () => {
-        const logoSplit = SplitText.create(".preloader-logo h1", {
+      let logoSplit;
+
+      try {
+        logoSplit = SplitText.create(".preloader-logo h1", {
           type: "chars",
           charsClass: "char",
           mask: "chars",
@@ -55,13 +93,7 @@ const Preloader = ({ onAnimationComplete }) => {
 
         const tl = gsap.timeline({
           delay: 0.1,
-          onComplete: () => {
-            setLoaderAnimating(false);
-            window.setTimeout(() => {
-              setShowPreloader(false);
-              if (onAnimationComplete) onAnimationComplete();
-            }, 60);
-          },
+          onComplete: completePreloader,
         });
 
         tl.to(logoSplit.chars, {
@@ -99,11 +131,21 @@ const Preloader = ({ onAnimationComplete }) => {
             },
             "<"
           );
-      };
 
-      startAnimation();
+        return () => {
+          tl.kill();
+          if (logoSplit) {
+            logoSplit.revert();
+          }
+        };
+      } catch {
+        completePreloader();
+      }
     },
-    { scope: wrapperRef, dependencies: [showPreloader, onAnimationComplete] }
+    {
+      scope: wrapperRef,
+      dependencies: [showPreloader, canStartExitAnimation, onAnimationComplete],
+    }
   );
 
   if (!showPreloader) return null;

@@ -2,6 +2,7 @@ import "./App.css";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { Suspense, lazy, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { preloadAllRoutes, routeLoaders } from "./utils/routePreload";
+import { preloadImages, aboutDeskImageSources } from "./utils/preloadAssets";
 import FAQ from "./pages/FAQ/FAQ";
 
 import NavBar from "./components/NavBar/NavBar";
@@ -47,7 +48,38 @@ function ScrollToTop() {
 function App() {
   const location = useLocation();
   const [isPreloaderComplete, setIsPreloaderComplete] = useState(false);
+  const [isInitialLoadReady, setIsInitialLoadReady] = useState(false);
   const previousTitleRef = useRef(document.title);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const preloadCriticalAssets = async () => {
+      const currentPathLoader = routeLoaders[location.pathname];
+      const routePromises = [routeLoaders["/"]?.()];
+
+      if (currentPathLoader && location.pathname !== "/") {
+        routePromises.push(currentPathLoader());
+      }
+
+      const preloadTasks = [
+        Promise.allSettled(routePromises.filter(Boolean)),
+        preloadImages(aboutDeskImageSources, 5000),
+      ];
+
+      await Promise.allSettled(preloadTasks);
+
+      if (isMounted) {
+        setIsInitialLoadReady(true);
+      }
+    };
+
+    preloadCriticalAssets();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [location.pathname]);
 
   useEffect(() => {
     // Preserve the original title so tab visibility messaging stays reversible.
@@ -104,7 +136,10 @@ function App() {
   return (
     <>
       {!isPreloaderComplete && (
-        <Preloader onAnimationComplete={handlePreloaderComplete} />
+        <Preloader
+          onAnimationComplete={handlePreloaderComplete}
+          readyToExit={isInitialLoadReady}
+        />
       )}
       <div className={`app-shell ${isPreloaderComplete ? "ready" : ""}`}>
         <ScrollToTop />
