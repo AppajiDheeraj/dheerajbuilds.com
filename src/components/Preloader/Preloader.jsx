@@ -11,9 +11,9 @@ const Preloader = ({ onAnimationComplete, readyToExit = false }) => {
   const [showPreloader, setShowPreloader] = useState(true);
   const [loaderAnimating, setLoaderAnimating] = useState(true);
   const [canStartExitAnimation, setCanStartExitAnimation] = useState(false);
+  const [isIntroComplete, setIsIntroComplete] = useState(false);
   const wrapperRef = useRef(null);
   const hasCompletedRef = useRef(false);
-  const canStartExitRef = useRef(false);
   const lenis = useLenis();
 
   useEffect(() => {
@@ -21,10 +21,6 @@ const Preloader = ({ onAnimationComplete, readyToExit = false }) => {
       setCanStartExitAnimation(true);
     }
   }, [readyToExit]);
-
-  useEffect(() => {
-    canStartExitRef.current = canStartExitAnimation;
-  }, [canStartExitAnimation]);
 
   useEffect(() => {
     if (canStartExitAnimation) {
@@ -40,6 +36,21 @@ const Preloader = ({ onAnimationComplete, readyToExit = false }) => {
       window.clearTimeout(fallbackId);
     };
   }, [canStartExitAnimation]);
+
+  useEffect(() => {
+    if (!showPreloader) {
+      return undefined;
+    }
+
+    // Absolute escape hatch: never allow a permanent hidden app state.
+    const emergencyId = window.setTimeout(() => {
+      completePreloader();
+    }, 12000);
+
+    return () => {
+      window.clearTimeout(emergencyId);
+    };
+  }, [showPreloader]);
 
   const completePreloader = () => {
     if (hasCompletedRef.current) {
@@ -71,8 +82,6 @@ const Preloader = ({ onAnimationComplete, readyToExit = false }) => {
 
       let logoSplit;
       let introTimeline;
-      let exitTimeline;
-      let waitRafId;
 
       try {
         logoSplit = SplitText.create(".preloader-logo h1", {
@@ -99,50 +108,11 @@ const Preloader = ({ onAnimationComplete, readyToExit = false }) => {
         const isMobile = window.innerWidth < 1000;
         const maskScale = isMobile ? 25 : 15;
 
-        const runExitAnimation = () => {
-          exitTimeline = gsap.timeline({
-            onComplete: completePreloader,
-          });
-
-          exitTimeline
-            .to(logoSplit.chars, {
-              x: "-110%",
-              stagger: 0.035,
-              duration: 0.9,
-              ease: "power3.inOut",
-            })
-            .to(
-              ".preloader-progress",
-              {
-                opacity: 0,
-                duration: 0.7,
-                ease: "sine.out",
-              },
-              "-=0.4"
-            )
-            .to(
-              ".preloader-mask",
-              {
-                scale: maskScale,
-                duration: 0.7,
-                ease: "expo.inOut",
-              },
-              "<"
-            );
-        };
-
-        const waitForReadyAndExit = () => {
-          if (canStartExitRef.current) {
-            runExitAnimation();
-            return;
-          }
-
-          waitRafId = window.requestAnimationFrame(waitForReadyAndExit);
-        };
-
         introTimeline = gsap.timeline({
           delay: 0.1,
-          onComplete: waitForReadyAndExit,
+          onComplete: () => {
+            setIsIntroComplete(true);
+          },
         });
 
         introTimeline.to(logoSplit.chars, {
@@ -153,14 +123,8 @@ const Preloader = ({ onAnimationComplete, readyToExit = false }) => {
         }).add(animateProgress(), "<");
 
         return () => {
-          if (waitRafId) {
-            window.cancelAnimationFrame(waitRafId);
-          }
           if (introTimeline) {
             introTimeline.kill();
-          }
-          if (exitTimeline) {
-            exitTimeline.kill();
           }
           if (logoSplit) {
             logoSplit.revert();
@@ -173,6 +137,55 @@ const Preloader = ({ onAnimationComplete, readyToExit = false }) => {
     {
       scope: wrapperRef,
       dependencies: [showPreloader, onAnimationComplete],
+    }
+  );
+
+  useGSAP(
+    () => {
+      if (!showPreloader || !isIntroComplete || !canStartExitAnimation) {
+        return;
+      }
+
+      const isMobile = window.innerWidth < 1000;
+      const maskScale = isMobile ? 25 : 15;
+
+      const exitTimeline = gsap.timeline({
+        onComplete: completePreloader,
+      });
+
+      exitTimeline
+        .to(".preloader-logo .char", {
+          x: "-110%",
+          stagger: 0.035,
+          duration: 0.9,
+          ease: "power3.inOut",
+        })
+        .to(
+          ".preloader-progress",
+          {
+            opacity: 0,
+            duration: 0.7,
+            ease: "sine.out",
+          },
+          "-=0.4"
+        )
+        .to(
+          ".preloader-mask",
+          {
+            scale: maskScale,
+            duration: 0.7,
+            ease: "expo.inOut",
+          },
+          "<"
+        );
+
+      return () => {
+        exitTimeline.kill();
+      };
+    },
+    {
+      scope: wrapperRef,
+      dependencies: [showPreloader, isIntroComplete, canStartExitAnimation],
     }
   );
 
