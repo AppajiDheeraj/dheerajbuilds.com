@@ -13,6 +13,7 @@ const Preloader = ({ onAnimationComplete, readyToExit = false }) => {
   const [canStartExitAnimation, setCanStartExitAnimation] = useState(false);
   const wrapperRef = useRef(null);
   const hasCompletedRef = useRef(false);
+  const canStartExitRef = useRef(false);
   const lenis = useLenis();
 
   useEffect(() => {
@@ -20,6 +21,10 @@ const Preloader = ({ onAnimationComplete, readyToExit = false }) => {
       setCanStartExitAnimation(true);
     }
   }, [readyToExit]);
+
+  useEffect(() => {
+    canStartExitRef.current = canStartExitAnimation;
+  }, [canStartExitAnimation]);
 
   useEffect(() => {
     if (canStartExitAnimation) {
@@ -62,9 +67,12 @@ const Preloader = ({ onAnimationComplete, readyToExit = false }) => {
 
   useGSAP(
     () => {
-      if (!showPreloader || !canStartExitAnimation) return;
+      if (!showPreloader) return;
 
       let logoSplit;
+      let introTimeline;
+      let exitTimeline;
+      let waitRafId;
 
       try {
         logoSplit = SplitText.create(".preloader-logo h1", {
@@ -91,49 +99,69 @@ const Preloader = ({ onAnimationComplete, readyToExit = false }) => {
         const isMobile = window.innerWidth < 1000;
         const maskScale = isMobile ? 25 : 15;
 
-        const tl = gsap.timeline({
-          delay: 0.1,
-          onComplete: completePreloader,
-        });
+        const runExitAnimation = () => {
+          exitTimeline = gsap.timeline({
+            onComplete: completePreloader,
+          });
 
-        tl.to(logoSplit.chars, {
-          x: "0%",
-          stagger: 0.04,
-          ease: "expo.out",
-          duration: 0.9,
-        })
-          .add(animateProgress(), "<")
-          .to(
-            logoSplit.chars,
-            {
+          exitTimeline
+            .to(logoSplit.chars, {
               x: "-110%",
               stagger: 0.035,
               duration: 0.9,
               ease: "power3.inOut",
-            },
-            "-=0.45"
-          )
-          .to(
-            ".preloader-progress",
-            {
-              opacity: 0,
-              duration: 0.7,
-              ease: "sine.out",
-            },
-            "-=0.4"
-          )
-          .to(
-            ".preloader-mask",
-            {
-              scale: maskScale,
-              duration: 0.7,
-              ease: "expo.inOut",
-            },
-            "<"
-          );
+            })
+            .to(
+              ".preloader-progress",
+              {
+                opacity: 0,
+                duration: 0.7,
+                ease: "sine.out",
+              },
+              "-=0.4"
+            )
+            .to(
+              ".preloader-mask",
+              {
+                scale: maskScale,
+                duration: 0.7,
+                ease: "expo.inOut",
+              },
+              "<"
+            );
+        };
+
+        const waitForReadyAndExit = () => {
+          if (canStartExitRef.current) {
+            runExitAnimation();
+            return;
+          }
+
+          waitRafId = window.requestAnimationFrame(waitForReadyAndExit);
+        };
+
+        introTimeline = gsap.timeline({
+          delay: 0.1,
+          onComplete: waitForReadyAndExit,
+        });
+
+        introTimeline.to(logoSplit.chars, {
+          x: "0%",
+          stagger: 0.04,
+          ease: "expo.out",
+          duration: 0.9,
+        }).add(animateProgress(), "<");
 
         return () => {
-          tl.kill();
+          if (waitRafId) {
+            window.cancelAnimationFrame(waitRafId);
+          }
+          if (introTimeline) {
+            introTimeline.kill();
+          }
+          if (exitTimeline) {
+            exitTimeline.kill();
+          }
           if (logoSplit) {
             logoSplit.revert();
           }
@@ -144,7 +172,7 @@ const Preloader = ({ onAnimationComplete, readyToExit = false }) => {
     },
     {
       scope: wrapperRef,
-      dependencies: [showPreloader, canStartExitAnimation, onAnimationComplete],
+      dependencies: [showPreloader, onAnimationComplete],
     }
   );
 

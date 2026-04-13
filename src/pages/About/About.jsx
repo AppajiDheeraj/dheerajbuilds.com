@@ -6,7 +6,7 @@ import Footer from "../../components/Footer/Footer";
 import { siteConfig } from "../../data";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Flip } from "gsap/Flip";
+import { Flip } from "gsap/flip";
 import { Bolt, Grid2x2, NotebookTabs } from "lucide-react";
 
 import ReactLenis from "lenis/react";
