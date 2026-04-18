@@ -7,6 +7,12 @@ const apiProxyTarget =
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    dedupe: ["gsap"],
+  },
+  optimizeDeps: {
+    exclude: ["gsap", "@gsap/react"],
+  },
   server: {
     host: true,
     port: 3000,
